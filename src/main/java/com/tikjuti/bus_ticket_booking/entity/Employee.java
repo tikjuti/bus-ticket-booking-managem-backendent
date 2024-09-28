@@ -28,8 +28,6 @@ public class Employee {
     String email;
     LocalDateTime dob;
     String nationalIDNumber;
-    String username;
-    String password;
     String status;
 
     @CreationTimestamp
@@ -40,4 +38,7 @@ public class Employee {
     @JoinColumn(name = "employee_type_id")
     EmployeeType employeeType;
 
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    Account account;
 }

@@ -14,6 +14,9 @@ public enum ErrorCode {
 	PAYMENT_METHOD_EXISTED(400, "Payment method existed", HttpStatus.BAD_REQUEST),
 	VEHICLE_TYPE_EXISTED(400, "Vehicle type existed", HttpStatus.BAD_REQUEST),
 	ROUTE_EXISTED(400, "Route existed", HttpStatus.BAD_REQUEST),
+	CUSTOMER_EXISTED(400, "Customer existed", HttpStatus.BAD_REQUEST),
+	ACCOUNT_EXISTED(400, "Account existed", HttpStatus.BAD_REQUEST),
+	VEHICLE_EXISTED(400, "Vehicle existed", HttpStatus.BAD_REQUEST),
 	INVALID_KEY(400, "Invalid message key", HttpStatus.BAD_REQUEST),
 	UNCATEGORIZED_EXCEPTION(500, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
 

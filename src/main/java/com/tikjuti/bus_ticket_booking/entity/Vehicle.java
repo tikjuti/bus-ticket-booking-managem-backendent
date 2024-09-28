@@ -37,5 +37,5 @@ public class Vehicle {
     VehicleType vehicleType;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<Seat> seats = new HashSet<>(); // Danh sách các ghế
+    Set<Seat> seats = new HashSet<>();
 }
