@@ -1,4 +1,4 @@
-package com.tikjuti.bus_ticket_booking.dto.request;
+package com.tikjuti.bus_ticket_booking.dto.request.Price;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EmployeeTypeUpdateRequest {
-    String nameEmployeeType;
+public class PriceUpdateRequest {
+    int ticketPrice;
+    String vehicleTypeId;
+    String routeId;
 }

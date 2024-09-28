@@ -1,7 +1,7 @@
 package com.tikjuti.bus_ticket_booking.service;
 
-import com.tikjuti.bus_ticket_booking.dto.request.EmployeeTypeCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.EmployeeTypeUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.EmployeeType.EmployeeTypeCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.EmployeeType.EmployeeTypeUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.EmployeeTypeResponse;
 import com.tikjuti.bus_ticket_booking.entity.EmployeeType;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
@@ -47,18 +47,21 @@ public class EmployeeTypeService {
                 .findById(employeeTypeId)
                 .orElseThrow(() -> new RuntimeException("Employee type not found"));
 
+        if(employeeTypeRepository.existsByNameEmployeeType(request.getNameEmployeeType()))
+            throw new AppException(ErrorCode.EMPLOYEE_TYPE_EXISTED);
+
         employeeTypeMapper.updateEmployeeType(employeeType, request);
 
         return employeeTypeMapper
                 .toEmployeeTypeResponse(employeeTypeRepository.save(employeeType));
     }
 
-    public boolean deleteEmployeeType(String employeeTypeId) {
-        if (employeeTypeRepository.existsById(employeeTypeId)) {
-            employeeTypeRepository.deleteById(employeeTypeId);
-            return true;
-        } else {
-            return false;
-        }
+    public void deleteEmployeeType(String employeeTypeId) {
+        employeeTypeRepository.findById(employeeTypeId)
+                .map(employeeType -> {
+                    employeeTypeRepository.delete(employeeType);
+                    return true;
+                })
+                .orElseThrow(() -> new RuntimeException("Employee type not found for ID: " + employeeTypeId));
     }
 }

@@ -1,6 +1,7 @@
 package com.tikjuti.bus_ticket_booking.exception;
 
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(value = Exception.class)
-	ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception)
+	ResponseEntity<ApiResponse> handlingRuntimeException(Exception exception)
 	{
 		ApiResponse apiResponse = new ApiResponse();
 		
@@ -19,6 +20,19 @@ public class GlobalExceptionHandler {
 		
 		return ResponseEntity
 				.badRequest()
+				.body(apiResponse);
+	}
+
+	@ExceptionHandler(value = RuntimeException.class)
+	ResponseEntity<ApiResponse> hanlingNotFoundException(RuntimeException exception)
+	{
+		ApiResponse apiResponse = new ApiResponse();
+
+		apiResponse.setMessage(exception.getMessage());
+		apiResponse.setCode(HttpStatus.NOT_FOUND.value());
+
+		return ResponseEntity
+				.status(HttpStatus.NOT_FOUND)
 				.body(apiResponse);
 	}
 	

@@ -1,19 +1,20 @@
-package com.tikjuti.bus_ticket_booking.entity;
+package com.tikjuti.bus_ticket_booking.dto.response;
 
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-@Entity
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Route {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+public class RouteResponse {
     String id;
-
     String departureLocation;
     String arrivalLocation;
     String departurePoint;

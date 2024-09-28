@@ -11,12 +11,16 @@ import org.springframework.http.HttpStatusCode;
 public enum ErrorCode {
 	
 	EMPLOYEE_TYPE_EXISTED(400, "Employee type existed", HttpStatus.BAD_REQUEST),
+	ROUTE_EXISTED(400, "Route existed", HttpStatus.BAD_REQUEST),
 	INVALID_KEY(400, "Invalid message key", HttpStatus.BAD_REQUEST),
 	UNCATEGORIZED_EXCEPTION(500, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
+
+	DURATION_INVALID(404, "Duration must be greater than 0", HttpStatus.BAD_REQUEST),
+	DISTANCE_INVALID(404, "Distance must be greater than 0", HttpStatus.BAD_REQUEST),
 	USERNAME_INVALID(404, "Username must be at least 3 characters", HttpStatus.BAD_REQUEST),
 	PASSWORD_INVALID(404, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
 	;
-	
+
 	int code;
 	String message;
 	HttpStatusCode statusCode;

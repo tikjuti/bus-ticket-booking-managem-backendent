@@ -1,4 +1,4 @@
-package com.tikjuti.bus_ticket_booking.dto.request;
+package com.tikjuti.bus_ticket_booking.dto.request.EmployeeType;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

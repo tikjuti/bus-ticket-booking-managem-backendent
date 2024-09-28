@@ -1,25 +1,18 @@
-package com.tikjuti.bus_ticket_booking.entity;
+package com.tikjuti.bus_ticket_booking.dto.response;
 
-import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class VehicleType {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+public class PriceResponse {
     String id;
-
-    String vehicleTypeName;
-
+    int ticketPrice;
+    VehicleTypeResponse vehicleType;
+    RouteResponse route;
 }
