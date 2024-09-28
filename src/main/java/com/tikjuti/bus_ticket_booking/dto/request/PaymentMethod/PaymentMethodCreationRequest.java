@@ -1,4 +1,4 @@
-package com.tikjuti.bus_ticket_booking.dto.response;
+package com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class VehicleTypeResponse {
-    String id;
-    String vehicleTypeName;
+public class PaymentMethodCreationRequest {
+    String methodName;
 }

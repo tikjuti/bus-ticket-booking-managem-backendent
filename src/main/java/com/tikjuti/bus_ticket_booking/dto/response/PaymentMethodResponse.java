@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class VehicleTypeResponse {
+public class PaymentMethodResponse {
     String id;
-    String vehicleTypeName;
+    String methodName;
 }
