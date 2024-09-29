@@ -5,7 +5,9 @@ import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
+import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
 import com.tikjuti.bus_ticket_booking.entity.Route;
+import com.tikjuti.bus_ticket_booking.entity.Seat;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
 import com.tikjuti.bus_ticket_booking.service.RouteService;
 import com.tikjuti.bus_ticket_booking.service.VehicleService;
@@ -34,31 +36,31 @@ public class VehicleController {
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
-//    @GetMapping
-//    ResponseEntity<ApiResponse<List<Route>>> getRoutes()
-//    {
-//        List<Route> routeList = routeService.getRoutes();
-//
-//        ApiResponse<List<Route>> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Routes retrieved successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(routeList);
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/{routeId}")
-//    ResponseEntity<ApiResponse<RouteResponse>> getRoute(@PathVariable String routeId) {
-//
-//        ApiResponse<RouteResponse> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Route retrieved successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(routeService.getRoute(routeId));
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
+    @GetMapping
+    ResponseEntity<ApiResponse<List<Vehicle>>> getVehicles()
+    {
+        List<Vehicle> vehicleList = vehicleService.getVehicles();
+
+        ApiResponse<List<Vehicle>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Vehicles retrieved successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(vehicleList);
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/{vehicleId}")
+    ResponseEntity<ApiResponse<VehicleResponse>> getVehicle(@PathVariable String vehicleId) {
+
+        ApiResponse<VehicleResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Vehicle retrieved successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(vehicleService.getVehicle(vehicleId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 //
 //    @PutMapping("/{routeId}")
 //    ResponseEntity<ApiResponse<RouteResponse>> updateRoute(@PathVariable String routeId, @RequestBody RouteUpdateRequest request)

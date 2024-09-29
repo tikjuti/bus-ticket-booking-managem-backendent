@@ -1,24 +1,23 @@
 package com.tikjuti.bus_ticket_booking.service;
 
-import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
-import com.tikjuti.bus_ticket_booking.entity.Route;
+import com.tikjuti.bus_ticket_booking.entity.Seat;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
 import com.tikjuti.bus_ticket_booking.entity.VehicleType;
+import com.tikjuti.bus_ticket_booking.enums.SeatStatus;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
-import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.mapper.VehicleMapper;
-import com.tikjuti.bus_ticket_booking.repository.RouteRepository;
+import com.tikjuti.bus_ticket_booking.repository.SeatRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class VehicleService {
@@ -27,6 +26,9 @@ public class VehicleService {
 
     @Autowired
     private VehicleTypeRepository vehicleTypeRepository;
+
+    @Autowired
+    private SeatRepository seatRepository;
 
     @Autowired
     private VehicleMapper vehicleMapper;
@@ -49,19 +51,41 @@ public class VehicleService {
                 .orElseThrow(() -> new RuntimeException("VehicleType not found"));
         vehicle.setVehicleType(vehicleType);
 
-        return vehicleRepository
-                .save(vehicle);
+        Vehicle savedVehicle = vehicleRepository.save(vehicle);
+
+        Set<Seat> seats = new HashSet<>();
+        for (int i = 1; i <= request.getSeatCount(); i++) {
+            Seat seat = new Seat();
+            seat.setPosition(i + "");
+            seat.setStatus(SeatStatus.AVAILABLE + "");
+            seat.setVehicle(savedVehicle);
+            seats.add(seat);
+        }
+
+        seatRepository.saveAll(seats);
+        savedVehicle.setSeats(seats);
+
+        return savedVehicle;
     }
 
-//    public List<Route> getRoutes() {return routeRepository.findAll();}
-//
-//    public RouteResponse getRoute(String routeId)
-//    {
-//        return routeMapper
-//                .toRouteResponse(routeRepository.findById(routeId)
-//                        .orElseThrow(() -> new RuntimeException("Route not found")));
-//    }
-//
+    public List<Vehicle> getVehicles() {return vehicleRepository.findAll();}
+
+    public VehicleResponse getVehicle(String vehicleId)
+    {
+        Vehicle vehicle = vehicleRepository.findByIdWithSeats(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        System.out.println("Vehicle ID: " + vehicle.getId());
+        System.out.println("Vehicle Name: " + vehicle.getVehicleName());
+        System.out.println("Seats Count: " + vehicle.getSeats().size());
+        vehicle.getSeats().forEach(seat -> {
+            System.out.println("Seat ID: " + seat.getId());
+            System.out.println("Seat Position: " + seat.getPosition());
+            System.out.println("Seat Status: " + seat.getStatus());
+        });
+        return vehicleMapper.toVehicleResponse(vehicle);
+    }
+
 //    public RouteResponse updateRoute(RouteUpdateRequest request, String routeId)
 //    {
 //        Route route = routeRepository

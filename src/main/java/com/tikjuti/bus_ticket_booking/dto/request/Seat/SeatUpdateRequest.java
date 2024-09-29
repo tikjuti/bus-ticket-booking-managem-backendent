@@ -1,6 +1,6 @@
-package com.tikjuti.bus_ticket_booking.dto.request.Account;
+package com.tikjuti.bus_ticket_booking.dto.request.Seat;
 
-import com.tikjuti.bus_ticket_booking.enums.AccountRole;
+import com.tikjuti.bus_ticket_booking.enums.SeatStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,9 +11,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountCreationRequest {
-    String username;
-    String password;
-    AccountRole role;
-
+public class SeatUpdateRequest {
+    SeatStatus status;
+    String position;
+    String vehicle;
 }

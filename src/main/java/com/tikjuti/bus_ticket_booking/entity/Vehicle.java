@@ -36,6 +36,6 @@ public class Vehicle {
     @JoinColumn(name = "vehicle_type_id")
     VehicleType vehicleType;
 
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     Set<Seat> seats = new HashSet<>();
 }
