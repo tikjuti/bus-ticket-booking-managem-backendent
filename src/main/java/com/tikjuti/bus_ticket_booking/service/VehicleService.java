@@ -1,6 +1,8 @@
 package com.tikjuti.bus_ticket_booking.service;
 
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.response.SeatResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
 import com.tikjuti.bus_ticket_booking.entity.Seat;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
@@ -8,6 +10,7 @@ import com.tikjuti.bus_ticket_booking.entity.VehicleType;
 import com.tikjuti.bus_ticket_booking.enums.SeatStatus;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
+import com.tikjuti.bus_ticket_booking.mapper.SeatMapper;
 import com.tikjuti.bus_ticket_booking.mapper.VehicleMapper;
 import com.tikjuti.bus_ticket_booking.repository.SeatRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleRepository;
@@ -32,6 +35,9 @@ public class VehicleService {
 
     @Autowired
     private VehicleMapper vehicleMapper;
+
+    @Autowired
+    private SeatMapper seatMapper;
 
     public Vehicle  createVehicle (VehicleCreationRequest request)
     {
@@ -63,7 +69,6 @@ public class VehicleService {
         }
 
         seatRepository.saveAll(seats);
-        savedVehicle.setSeats(seats);
 
         return savedVehicle;
     }
@@ -72,43 +77,33 @@ public class VehicleService {
 
     public VehicleResponse getVehicle(String vehicleId)
     {
-        Vehicle vehicle = vehicleRepository.findByIdWithSeats(vehicleId)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        VehicleResponse vehicleResponse = vehicleMapper.toVehicleResponse(vehicleRepository
+                .findById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found")));
 
-        System.out.println("Vehicle ID: " + vehicle.getId());
-        System.out.println("Vehicle Name: " + vehicle.getVehicleName());
-        System.out.println("Seats Count: " + vehicle.getSeats().size());
-        vehicle.getSeats().forEach(seat -> {
-            System.out.println("Seat ID: " + seat.getId());
-            System.out.println("Seat Position: " + seat.getPosition());
-            System.out.println("Seat Status: " + seat.getStatus());
-        });
-        return vehicleMapper.toVehicleResponse(vehicle);
+
+        Set<SeatResponse> seats = seatMapper.toListSeatResponse(vehicleRepository
+                .findSeatsByVehicleId(vehicleId));
+        vehicleResponse.setSeats(seats);
+        return vehicleResponse;
     }
 
-//    public RouteResponse updateRoute(RouteUpdateRequest request, String routeId)
-//    {
-//        Route route = routeRepository
-//                .findById(routeId)
-//                .orElseThrow(() -> new RuntimeException("Route not found"));
-//
-//        Boolean exitsRoute = routeRepository.checkRoute(
-//                request.getDepartureLocation(),
-//                request.getArrivalLocation(),
-//                request.getDeparturePoint(),
-//                request.getArrivalPoint(),
-//                request.getDistance(),
-//                request.getDuration()
-//        );
-//        if(!exitsRoute)
-//            throw new AppException(ErrorCode.ROUTE_EXISTED);
-//
-//        routeMapper.updateRoute(route, request);
-//
-//        return routeMapper
-//                .toRouteResponse(routeRepository.save(route));
-//    }
-//
+    public VehicleResponse updateVehicle(VehicleUpdateRequest request, String vehicleId)
+    {
+        Vehicle vehicle = vehicleRepository
+                .findById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        vehicleMapper.toVehicleResponse1(vehicle);
+
+        VehicleType vehicleType = vehicleTypeRepository
+                .findById(request.getVehicleType())
+                .orElseThrow(() -> new RuntimeException("VehicleType not found"));
+        vehicle.setVehicleType(vehicleType);
+
+        return vehicleMapper
+                .toVehicleResponse(vehicleRepository.save(vehicle));
+    }
 //    public RouteResponse patchUpdateRoute(RouteUpdateRequest request, String routeId) {
 //        Route route = routeRepository
 //                .findById(routeId)

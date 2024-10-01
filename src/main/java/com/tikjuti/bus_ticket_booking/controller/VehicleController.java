@@ -3,6 +3,7 @@ package com.tikjuti.bus_ticket_booking.controller;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
@@ -62,17 +63,17 @@ public class VehicleController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 //
-//    @PutMapping("/{routeId}")
-//    ResponseEntity<ApiResponse<RouteResponse>> updateRoute(@PathVariable String routeId, @RequestBody RouteUpdateRequest request)
-//    {
-//        ApiResponse<RouteResponse> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Route update successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(routeService.updateRoute(request, routeId));
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
+    @PutMapping("/{vehicleId}")
+    ResponseEntity<ApiResponse<VehicleResponse>> updateVehicle(@PathVariable String vehicleId, @RequestBody VehicleUpdateRequest request)
+    {
+        ApiResponse<VehicleResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Vehicle update successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(vehicleService.updateVehicle(request, vehicleId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 //
 //    @PatchMapping("/{routeId}")
 //    ResponseEntity<ApiResponse<RouteResponse>> updatePatchRoute(@PathVariable String routeId, @RequestBody RouteUpdateRequest request)
