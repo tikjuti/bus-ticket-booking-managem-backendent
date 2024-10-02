@@ -1,16 +1,10 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
-import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
-import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
-import com.tikjuti.bus_ticket_booking.entity.Route;
-import com.tikjuti.bus_ticket_booking.entity.Seat;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
-import com.tikjuti.bus_ticket_booking.service.RouteService;
 import com.tikjuti.bus_ticket_booking.service.VehicleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,24 +68,24 @@ public class VehicleController {
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
-//
-//    @PatchMapping("/{routeId}")
-//    ResponseEntity<ApiResponse<RouteResponse>> updatePatchRoute(@PathVariable String routeId, @RequestBody RouteUpdateRequest request)
-//    {
-//        ApiResponse<RouteResponse> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Route update successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(routeService.patchUpdateRoute(request, routeId));
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
-//
-//    @DeleteMapping("/{routeId}")
-//    ResponseEntity<Void> deleteRoute(@PathVariable String routeId) {
-//
-//        routeService.deleteRoute(routeId);
-//
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+
+    @PatchMapping("/{vehicleId}")
+    ResponseEntity<ApiResponse<VehicleResponse>> updatePatchVehicle(@PathVariable String vehicleId, @RequestBody VehicleUpdateRequest request)
+    {
+        ApiResponse<VehicleResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Vehicle update successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(vehicleService.patchUpdateRoute(request, vehicleId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{vehicleId}")
+    ResponseEntity<Void> deleteVehicle(@PathVariable String vehicleId) {
+
+        vehicleService.deleteVehicle(vehicleId);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

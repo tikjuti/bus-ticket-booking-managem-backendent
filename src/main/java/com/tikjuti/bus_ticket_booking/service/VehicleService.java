@@ -81,9 +81,9 @@ public class VehicleService {
                 .findById(vehicleId)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found")));
 
-
         Set<SeatResponse> seats = seatMapper.toListSeatResponse(vehicleRepository
                 .findSeatsByVehicleId(vehicleId));
+
         vehicleResponse.setSeats(seats);
         return vehicleResponse;
     }
@@ -94,70 +94,50 @@ public class VehicleService {
                 .findById(vehicleId)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
-        vehicleMapper.toVehicleResponse1(vehicle);
+        vehicleMapper.toUpdateVehicleResponse(vehicle);
 
         VehicleType vehicleType = vehicleTypeRepository
                 .findById(request.getVehicleType())
-                .orElseThrow(() -> new RuntimeException("VehicleType not found"));
+                .orElseThrow(() -> new RuntimeException("Vehicle type not found"));
         vehicle.setVehicleType(vehicleType);
 
         return vehicleMapper
                 .toVehicleResponse(vehicleRepository.save(vehicle));
     }
-//    public RouteResponse patchUpdateRoute(RouteUpdateRequest request, String routeId) {
-//        Route route = routeRepository
-//                .findById(routeId)
-//                .orElseThrow(() -> new RuntimeException("Route not found"));
-//
-//        Boolean existsRoute = routeRepository.checkRoute(
-//                request.getDepartureLocation() != null ? request.getDepartureLocation() : route.getDepartureLocation(),
-//                request.getArrivalLocation() != null ? request.getArrivalLocation() : route.getArrivalLocation(),
-//                request.getDeparturePoint() != null ? request.getDeparturePoint() : route.getDeparturePoint(),
-//                request.getArrivalPoint() != null ? request.getArrivalPoint() : route.getArrivalPoint(),
-//                request.getDistance() != 0 ? request.getDistance() : route.getDistance(),
-//                request.getDuration() != 0 ? request.getDuration() : route.getDuration()
-//        );
-//
-//        if (!existsRoute) {
-//            throw new AppException(ErrorCode.ROUTE_EXISTED);
-//        }
-//
-//        if (request.getDepartureLocation() != null) {
-//            route.setDepartureLocation(request.getDepartureLocation());
-//        }
-//
-//        if (request.getArrivalLocation() != null) {
-//            route.setArrivalLocation(request.getArrivalLocation());
-//        }
-//
-//        if (request.getDeparturePoint() != null) {
-//            route.setDeparturePoint(request.getDeparturePoint());
-//        }
-//
-//        if (request.getArrivalPoint() != null) {
-//            route.setArrivalPoint(request.getArrivalPoint());
-//        }
-//
-//        if (request.getDistance() != 0 && request.getDistance() > 0) {
-//            route.setDistance(request.getDistance());
-//        }
-//
-//        if (request.getDuration() != 0 && request.getDuration() > 0) {
-//            route.setDuration(request.getDuration());
-//        }
-//
-//        Route updatedRoute = routeRepository.save(route);
-//
-//        return routeMapper.toRouteResponse(updatedRoute);
-//    }
-//
-//
-//    public void deleteRoute(String routeId) {
-//        routeRepository.findById(routeId)
-//                .map(route -> {
-//                    routeRepository.delete(route);
-//                    return true;
-//                })
-//                .orElseThrow(() -> new RuntimeException("Route not found for ID: " + routeId));
-//    }
+    public VehicleResponse patchUpdateRoute(VehicleUpdateRequest request, String vehicleId) {
+        Vehicle vehicle = vehicleRepository
+                .findById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        if (request.getVehicleType() != null) {
+            VehicleType vehicleType = vehicleTypeRepository
+                    .findById(request.getVehicleType())
+                    .orElseThrow(() -> new RuntimeException("Vehicle type not found"));
+            vehicle.setVehicleType(vehicleType);
+        }
+
+        if (request.getVehicleName() != null) {
+            vehicle.setVehicleName(request.getVehicleName());
+        }
+
+        if (request.getColor() != null) {
+            vehicle.setColor(request.getColor());
+        }
+
+        if (request.getStatus() != null) {
+            vehicle.setStatus(request.getStatus().name());
+        }
+
+        return vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
+    }
+
+
+    public void deleteVehicle(String vehicleId) {
+        vehicleRepository.findById(vehicleId)
+                .map(vehicle -> {
+                    vehicleRepository.delete(vehicle);
+                    return true;
+                })
+                .orElseThrow(() -> new RuntimeException("Vehicle not found for ID: " + vehicleId));
+    }
 }

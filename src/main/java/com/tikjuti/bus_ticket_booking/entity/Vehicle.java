@@ -9,6 +9,8 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -33,4 +35,7 @@ public class Vehicle {
     @ManyToOne
     @JoinColumn(name = "vehicle_type_id")
     VehicleType vehicleType;
+
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Seat> seats = new HashSet<>();
 }
