@@ -22,6 +22,8 @@ public enum ErrorCode {
 	INVALID_KEY(400, "Invalid message key", HttpStatus.BAD_REQUEST),
 	UNCATEGORIZED_EXCEPTION(500, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
 
+	INVALID_DATE_TIME(404, "Invalid date time", HttpStatus.BAD_REQUEST),
+	VEHICLE_ASSIGNMENT_EXISTED(404, "Vehicle assignment exists", HttpStatus.BAD_REQUEST),
 	DURATION_INVALID(404, "Duration must be greater than 0", HttpStatus.BAD_REQUEST),
 	DISTANCE_INVALID(404, "Distance must be greater than 0", HttpStatus.BAD_REQUEST),
 	USERNAME_INVALID(404, "Username must be at least 3 characters", HttpStatus.BAD_REQUEST),

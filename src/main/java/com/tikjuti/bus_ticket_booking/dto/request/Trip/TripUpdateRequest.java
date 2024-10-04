@@ -1,6 +1,5 @@
-package com.tikjuti.bus_ticket_booking.entity;
+package com.tikjuti.bus_ticket_booking.dto.request.Trip;
 
-import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,27 +9,15 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Trip {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
-
+public class TripUpdateRequest {
     LocalDate departureDate;
     LocalTime departureTime;
-
     LocalDate arrivalDate;
     LocalTime arrivalTime;
-
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id")
-    Vehicle vehicle;
-
-    @ManyToOne
-    @JoinColumn(name = "route_id")
-    Route route;
+    String vehicleId;
+    String routeId;
 }

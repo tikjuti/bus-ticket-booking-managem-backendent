@@ -1,6 +1,7 @@
-package com.tikjuti.bus_ticket_booking.entity;
+package com.tikjuti.bus_ticket_booking.dto.response;
 
-import jakarta.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,27 +11,17 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Trip {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class TripResponse {
     String id;
-
     LocalDate departureDate;
     LocalTime departureTime;
-
     LocalDate arrivalDate;
     LocalTime arrivalTime;
-
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id")
-    Vehicle vehicle;
-
-    @ManyToOne
-    @JoinColumn(name = "route_id")
-    Route route;
+    VehicleResponse vehicle;
+    RouteResponse route;
 }
