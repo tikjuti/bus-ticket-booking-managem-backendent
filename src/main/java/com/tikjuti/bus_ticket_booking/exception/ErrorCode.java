@@ -19,6 +19,9 @@ public enum ErrorCode {
 	VEHICLE_EXISTED(400, "Vehicle existed", HttpStatus.BAD_REQUEST),
 	POSITION_EXISTED(400, "Position existed", HttpStatus.BAD_REQUEST),
 	PRICE_EXISTED(400, "Price existed", HttpStatus.BAD_REQUEST),
+	USERNAME_EXISTED(400, "Username existed", HttpStatus.BAD_REQUEST),
+	EMAIL_EXISTED(400, "Email existed", HttpStatus.BAD_REQUEST),
+	PHONE_EXISTED(400, "Phone existed", HttpStatus.BAD_REQUEST),
 	INVALID_KEY(400, "Invalid message key", HttpStatus.BAD_REQUEST),
 	UNCATEGORIZED_EXCEPTION(500, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
 

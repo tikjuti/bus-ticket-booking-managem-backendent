@@ -10,11 +10,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RouteUpdateRequest {
-    String departureLocation;
-    String arrivalLocation;
-    String departurePoint;
-    String arrivalPoint;
-    int distance;
-    int duration;
+public class CustomerUpdateRequest {
+    String customerName;
+    String gender;
+    String address;
+    String phone;
+    String email;
+    String dob;
 }

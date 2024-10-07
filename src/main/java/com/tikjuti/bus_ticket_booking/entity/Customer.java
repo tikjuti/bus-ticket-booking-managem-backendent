@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -24,7 +24,7 @@ public class Customer {
     String address;
     String phone;
     String email;
-    LocalDateTime dob;
+    LocalDate dob;
 
     @OneToOne
     @JoinColumn(name = "account_id")

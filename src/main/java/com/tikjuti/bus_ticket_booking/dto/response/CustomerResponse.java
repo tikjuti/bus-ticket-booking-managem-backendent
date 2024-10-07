@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,10 +16,11 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerResponse {
     String id;
-    String departureLocation;
-    String arrivalLocation;
-    String departurePoint;
-    String arrivalPoint;
-    int distance;
-    int duration;
+    String customerName;
+    String gender;
+    String address;
+    String phone;
+    String email;
+    LocalDate dob;
+    AccountResponse account;
 }
