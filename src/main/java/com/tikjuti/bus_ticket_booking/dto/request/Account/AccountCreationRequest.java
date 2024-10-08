@@ -18,5 +18,4 @@ public class AccountCreationRequest {
     @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
     AccountRole role;
-
 }
