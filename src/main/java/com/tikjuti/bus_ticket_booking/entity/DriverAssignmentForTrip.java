@@ -18,8 +18,8 @@ public class DriverAssignmentForTrip {
     String id;
 
     @ManyToOne
-    @JoinColumn(name = "ticket_id")
-    Ticket ticket;
+    @JoinColumn(name = "trip_id")
+    Trip trip;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")

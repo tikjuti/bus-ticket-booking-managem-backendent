@@ -22,11 +22,13 @@ public enum ErrorCode {
 	USERNAME_EXISTED(400, "Username existed", HttpStatus.BAD_REQUEST),
 	EMAIL_EXISTED(400, "Email existed", HttpStatus.BAD_REQUEST),
 	PHONE_EXISTED(400, "Phone existed", HttpStatus.BAD_REQUEST),
+	DRIVER_ASSIGNMENT_FOR_VEHICLE_EXISTED(400, "Driver assignment for vehicle existed", HttpStatus.BAD_REQUEST),
 	NATIONAL_ID_NUMBER_EXISTED(400, "National ID number existed", HttpStatus.BAD_REQUEST),
 	INVALID_KEY(400, "Invalid message key", HttpStatus.BAD_REQUEST),
 	UNCATEGORIZED_EXCEPTION(500, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
 
 	INVALID_DATE_TIME(404, "Invalid date time", HttpStatus.BAD_REQUEST),
+	INVALID_DATE(404, "Invalid date", HttpStatus.BAD_REQUEST),
 	VEHICLE_ASSIGNMENT_EXISTED(404, "Vehicle assignment exists", HttpStatus.BAD_REQUEST),
 	DURATION_INVALID(404, "Duration must be greater than 0", HttpStatus.BAD_REQUEST),
 	DISTANCE_INVALID(404, "Distance must be greater than 0", HttpStatus.BAD_REQUEST),

@@ -1,0 +1,149 @@
+package com.tikjuti.bus_ticket_booking.service;
+
+import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.response.CustomerResponse;
+import com.tikjuti.bus_ticket_booking.dto.response.DriverAssignmentForTripResponse;
+import com.tikjuti.bus_ticket_booking.entity.Account;
+import com.tikjuti.bus_ticket_booking.entity.Customer;
+import com.tikjuti.bus_ticket_booking.entity.DriverAssignmentForTrip;
+import com.tikjuti.bus_ticket_booking.exception.AppException;
+import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
+import com.tikjuti.bus_ticket_booking.mapper.CustomerMapper;
+import com.tikjuti.bus_ticket_booking.mapper.DriverAssignmentForTripMapper;
+import com.tikjuti.bus_ticket_booking.repository.CustomerRepository;
+import com.tikjuti.bus_ticket_booking.repository.DriverAssignmentForTripRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+@Service
+public class DriverAssignmentForTripService {
+    @Autowired
+    private DriverAssignmentForTripRepository driverAssignmentForTripRepository;
+
+    @Autowired
+    private DriverAssignmentForTripMapper driverAssignmentForTripMapper;
+
+    @Autowired
+    private AccountService accountService;
+
+//    public DriverAssignmentForTrip createDriverAssignmentForTrip(
+//            DriverAssignmentForTripCreationRequest request)
+//    {
+//        if(customerRepository.existsByEmail(request.getEmail()))
+//            throw new AppException(ErrorCode.EMAIL_EXISTED);
+//
+//        if(customerRepository.existsByPhone(request.getPhone()))
+//            throw new AppException(ErrorCode.PHONE_EXISTED);
+//
+//        AccountCreationRequest requestAccount = new AccountCreationRequest();
+//        requestAccount.setUsername(request.getUsername());
+//        requestAccount.setPassword(request.getPassword());
+//        requestAccount.setRole(request.getRole());
+//
+//        Account account = accountService.createAccount(requestAccount);
+//
+//        LocalDate dob = LocalDate.parse(request.getDob().trim(), dateFormatter);
+//
+//        Customer customer = new Customer();
+//
+//        customer.setAccount(account);
+//        customer.setAddress(request.getAddress());
+//        customer.setEmail(request.getEmail());
+//        customer.setCustomerName(request.getCustomerName());
+//        customer.setPhone(request.getPhone());
+//        customer.setGender(request.getGender());
+//        customer.setDob(dob);
+//
+//        return customerRepository.save(customer);
+//    }
+
+    public List<DriverAssignmentForTrip> getDriverAssignmentForTrips()
+    {
+        return  driverAssignmentForTripRepository.findAll();
+    }
+
+    public DriverAssignmentForTripResponse getDriverAssignmentForTrip(String driverAssignmentForTripId)
+    {
+        return driverAssignmentForTripMapper
+                .toDriverAssignmentForTripResponse(driverAssignmentForTripRepository.findById(driverAssignmentForTripId)
+                .orElseThrow(() -> new RuntimeException("Driver assignment for trip not found")));
+    }
+
+//    public CustomerResponse updateCustomer(CustomerUpdateRequest request, String customerId)
+//    {
+//        Customer customer = customerRepository
+//                .findById(customerId)
+//                .orElseThrow(() -> new RuntimeException("Customer not found"));
+//
+//        if(customerRepository.existsByEmail(request.getEmail()))
+//            throw new AppException(ErrorCode.EMAIL_EXISTED);
+//
+//        if(customerRepository.existsByPhone(request.getPhone()))
+//            throw new AppException(ErrorCode.PHONE_EXISTED);
+//
+//        LocalDate dob = LocalDate.parse(request.getDob().trim(), dateFormatter);
+//
+//        customer.setAddress(request.getAddress());
+//        customer.setEmail(request.getEmail());
+//        customer.setCustomerName(request.getCustomerName());
+//        customer.setPhone(request.getPhone());
+//        customer.setGender(request.getGender());
+//        customer.setDob(dob);
+//
+//        return customerMapper
+//                .toCustomerResponse(customerRepository.save(customer));
+//    }
+//
+//    public CustomerResponse patchUpdateCustomer(CustomerUpdateRequest request, String customerId) {
+//        Customer customer = customerRepository
+//                .findById(customerId)
+//                .orElseThrow(() -> new RuntimeException("Customer not found"));
+//
+//        if (request.getEmail() != null) {
+//            if(customerRepository.existsByEmail(request.getEmail()))
+//                throw new AppException(ErrorCode.EMAIL_EXISTED);
+//            customer.setEmail(request.getEmail());
+//        }
+//
+//        if (request.getPhone() != null) {
+//            if(customerRepository.existsByPhone(request.getPhone()))
+//                throw new AppException(ErrorCode.PHONE_EXISTED);
+//            customer.setPhone(request.getPhone());
+//        }
+//
+//        if (request.getAddress() != null) {
+//            customer.setAddress(request.getAddress());
+//        }
+//
+//        if (request.getCustomerName() != null) {
+//            customer.setCustomerName(request.getCustomerName());
+//        }
+//
+//        if (request.getGender() != null) {
+//            customer.setGender(request.getGender());
+//        }
+//
+//        if (request.getDob() != null) {
+//            LocalDate dob = LocalDate.parse(request.getDob().trim(), dateFormatter);
+//            customer.setDob(dob);
+//        }
+//
+//        return customerMapper.toCustomerResponse(customerRepository.save(customer));
+//    }
+//
+//    public void deleteCustomer(String customerId) {
+//        customerRepository.findById(customerId)
+//                .map(customer -> {
+//                    customerRepository.delete(customer);
+//                    return true;
+//                })
+//                .orElseThrow(() -> new RuntimeException("Customer not found for ID: " + customerId));
+//    }
+}
