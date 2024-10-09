@@ -2,7 +2,6 @@ package com.tikjuti.bus_ticket_booking.service;
 
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripUpdateRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForVehicle.DriverAssignmentForVehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.DriverAssignmentForTripResponse;
 import com.tikjuti.bus_ticket_booking.entity.*;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
@@ -144,43 +143,64 @@ public class DriverAssignmentForTripService {
                 );
     }
 
-//    public CustomerResponse patchUpdateCustomer(CustomerUpdateRequest request, String customerId) {
-//        Customer customer = customerRepository
-//                .findById(customerId)
-//                .orElseThrow(() -> new RuntimeException("Customer not found"));
-//
-//        if (request.getEmail() != null) {
-//            if(customerRepository.existsByEmail(request.getEmail()))
-//                throw new AppException(ErrorCode.EMAIL_EXISTED);
-//            customer.setEmail(request.getEmail());
-//        }
-//
-//        if (request.getPhone() != null) {
-//            if(customerRepository.existsByPhone(request.getPhone()))
-//                throw new AppException(ErrorCode.PHONE_EXISTED);
-//            customer.setPhone(request.getPhone());
-//        }
-//
-//        if (request.getAddress() != null) {
-//            customer.setAddress(request.getAddress());
-//        }
-//
-//        if (request.getCustomerName() != null) {
-//            customer.setCustomerName(request.getCustomerName());
-//        }
-//
-//        if (request.getGender() != null) {
-//            customer.setGender(request.getGender());
-//        }
-//
-//        if (request.getDob() != null) {
-//            LocalDate dob = LocalDate.parse(request.getDob().trim(), dateFormatter);
-//            customer.setDob(dob);
-//        }
-//
-//        return customerMapper.toCustomerResponse(customerRepository.save(customer));
-//    }
-//
+    public DriverAssignmentForTripResponse patchUpdateDriverAssignmentForTrip(
+            DriverAssignmentForTripUpdateRequest request, String id) {
+
+        DriverAssignmentForTrip driverAssignmentForTrip = driverAssignmentForTripRepository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException("Driver assignment for trip not found"));
+
+        if (request.getTripId() != null || request.getEmployeeId() != null)
+        {
+            Trip trip = (request.getTripId() != null)
+                    ? tripRepository.findById(request.getTripId())
+                    .orElseThrow(() -> new RuntimeException("Trip not found"))
+                    : driverAssignmentForTrip.getTrip();
+
+            Employee employee = (request.getEmployeeId() != null)
+                    ? employeeRepository.findById(request.getEmployeeId())
+                    .orElseThrow(() -> new RuntimeException("Employee not found"))
+                    : driverAssignmentForTrip.getEmployee();
+
+            boolean checkIsDriver = driverAssignmentForTripRepository.
+                    checkIsDriver(employee.getId());
+
+//        Kiểm tra nhân viên có phải là tài xế không
+            if (checkIsDriver) {
+                throw new AppException(ErrorCode.EMPLOYEE_NOT_A_DRIVER);
+            }
+
+            boolean canDriverOperateVehicle = driverAssignmentForTripRepository.
+                    canDriverOperateVehicle(
+                            request.getTripId(),
+                            request.getEmployeeId()
+                    );
+
+//        Kiểm tra tài xế có đc phân công phụ trách xe không
+            if (canDriverOperateVehicle) {
+                throw new AppException(ErrorCode.DRIVER_CAN_NOT_OPERATE_VEHICLE);
+            }
+
+//        Kiểm tra xem tài xế đã được phân công cho chuyến đi chưa
+            boolean checkDriverAssignmentForTripExists = driverAssignmentForTripRepository.
+                    checkDriverAssignmentForTripExists(
+                            request.getTripId(),
+                            request.getEmployeeId(),
+                            null
+                    );
+
+            if (checkDriverAssignmentForTripExists) {
+                throw new AppException(ErrorCode.DRIVER_ASSIGNMENT_FOR_TRIP_EXISTED);
+            }
+
+            driverAssignmentForTrip.setTrip(trip);
+            driverAssignmentForTrip.setEmployee(employee);
+        }
+
+        return driverAssignmentForTripMapper.toDriverAssignmentForTripResponse(
+                driverAssignmentForTripRepository.save(driverAssignmentForTrip));
+    }
+
     public void deleteDriverAssignmentForTrip(String id) {
         driverAssignmentForTripRepository.findById(id)
                 .map(driverAssignmentForTrip -> {

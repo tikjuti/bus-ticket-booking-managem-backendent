@@ -81,17 +81,18 @@ public class DriverAssignmentForTripController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-//    @PatchMapping("/{customerId}")
-//    ResponseEntity<ApiResponse<CustomerResponse>> updatePatchCustomer(@PathVariable String customerId, @RequestBody CustomerUpdateRequest request)
-//    {
-//        ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Customer update successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(customerService.patchUpdateCustomer(request, customerId));
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
+    @PatchMapping("/{id}")
+    ResponseEntity<ApiResponse<DriverAssignmentForTripResponse>> updatePatchDriverAssignmentForTrip(
+            @PathVariable String id, @RequestBody DriverAssignmentForTripUpdateRequest request)
+    {
+        ApiResponse<DriverAssignmentForTripResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Driver assignment for trip update successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(driverAssignmentForTripService.patchUpdateDriverAssignmentForTrip(request, id));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 
     @DeleteMapping("/{id}")
     ResponseEntity<Void> deleteDriverAssignmentForTrip(@PathVariable String id) {
