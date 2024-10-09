@@ -20,4 +20,9 @@ public interface DriverAssignmentForVehicleRepository extends
             @Param("employeeId") String arrivalTime,
             @Param("driverAssignmentForVehicleId") String driverAssignmentForVehicleId
     );
+
+    @Procedure(name = "checkIsDriver")
+    Boolean checkIsDriver(
+            @Param("employeeId") String employeeId
+    );
 }

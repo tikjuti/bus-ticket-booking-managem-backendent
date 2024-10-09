@@ -4,6 +4,7 @@ package com.tikjuti.bus_ticket_booking.controller;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForVehicle.DriverAssignmentForVehicleCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForVehicle.DriverAssignmentForVehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.CustomerResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.DriverAssignmentForVehicleResponse;
@@ -65,35 +66,39 @@ public class DriverAssignmentForVehicleController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-//    @PutMapping("/{customerId}")
-//    ResponseEntity<ApiResponse<CustomerResponse>> updateRoute(@PathVariable String customerId, @RequestBody CustomerUpdateRequest request)
-//    {
-//        ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Customer update successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(customerService.updateCustomer(request, customerId));
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
-//
-//    @PatchMapping("/{customerId}")
-//    ResponseEntity<ApiResponse<CustomerResponse>> updatePatchCustomer(@PathVariable String customerId, @RequestBody CustomerUpdateRequest request)
-//    {
-//        ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Customer update successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(customerService.patchUpdateCustomer(request, customerId));
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
-//
-//    @DeleteMapping("/{customerId}")
-//    ResponseEntity<Void> deleteCustomer(@PathVariable String customerId) {
-//
-//        customerService.deleteCustomer(customerId);
-//
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    @PutMapping("/{id}")
+    ResponseEntity<ApiResponse<DriverAssignmentForVehicleResponse>> updateDriverAssignmentForVehicle(
+            @PathVariable String id, @RequestBody DriverAssignmentForVehicleUpdateRequest request)
+    {
+        ApiResponse<DriverAssignmentForVehicleResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Driver assignment for vehicle update successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(driverAssignmentForVehicleService.
+                updateDriverAssignmentForVehicle(request, id));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    ResponseEntity<ApiResponse<DriverAssignmentForVehicleResponse>> updatePatchDriverAssignmentForVehicle(
+            @PathVariable String id, @RequestBody DriverAssignmentForVehicleUpdateRequest request)
+    {
+        ApiResponse<DriverAssignmentForVehicleResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Driver assignment for vehicle update successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(driverAssignmentForVehicleService.
+                patchUpdateDriverAssignmentForVehicle(request, id));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> deleteDriverAssignmentForVehicle(@PathVariable String id) {
+
+        driverAssignmentForVehicleService.deleteDriverAssignmentForVehicle(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
