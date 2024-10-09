@@ -3,10 +3,15 @@ package com.tikjuti.bus_ticket_booking.controller;
 
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.CustomerResponse;
+import com.tikjuti.bus_ticket_booking.dto.response.DriverAssignmentForTripResponse;
 import com.tikjuti.bus_ticket_booking.entity.Customer;
+import com.tikjuti.bus_ticket_booking.entity.DriverAssignmentForTrip;
 import com.tikjuti.bus_ticket_booking.service.CustomerService;
+import com.tikjuti.bus_ticket_booking.service.DriverAssignmentForTripService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,73 +24,79 @@ import java.util.List;
 @RequestMapping("/api/driverAssignmentsForTrips")
 public class DriverAssignmentForTripController {
     @Autowired
-    private CustomerService customerService;
+    private DriverAssignmentForTripService driverAssignmentForTripService;
 
     @PostMapping
-    ResponseEntity<ApiResponse<Customer>> createCustomer(@RequestBody @Valid CustomerCreationRequest request) {
-        ApiResponse<Customer> apiResponse = new ApiResponse<>();
+    ResponseEntity<ApiResponse<DriverAssignmentForTrip>> createDriverAssignmentForTrip(
+            @RequestBody DriverAssignmentForTripCreationRequest request) {
+
+        ApiResponse<DriverAssignmentForTrip> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(HttpStatus.CREATED.value());
-        apiResponse.setMessage("Customer created successfully");
-        apiResponse.setResult(customerService.createCustomer(request));
+        apiResponse.setMessage("Driver assignment for trip created successfully");
+        apiResponse.setResult(driverAssignmentForTripService.createDriverAssignmentForTrip(request));
 
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Customer>>> getCustomers()
+    ResponseEntity<ApiResponse<List<DriverAssignmentForTrip>>> getDriverAssignmentsForTrips()
     {
-        List<Customer> customersList = customerService.getCustomers();
+        List<DriverAssignmentForTrip> driverAssignmentForTripList =
+                driverAssignmentForTripService.getDriverAssignmentForTrips();
 
-        ApiResponse<List<Customer>> apiResponse = new ApiResponse<>();
+        ApiResponse<List<DriverAssignmentForTrip>> apiResponse = new ApiResponse<>();
 
-        apiResponse.setMessage("Customers retrieved successfully");
+        apiResponse.setMessage("Driver assignment for trip retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());
-        apiResponse.setResult(customersList);
+        apiResponse.setResult(driverAssignmentForTripList);
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/{customerId}")
-    ResponseEntity<ApiResponse<CustomerResponse>> getCustomer(@PathVariable String customerId) {
+    @GetMapping("/{id}")
+    ResponseEntity<ApiResponse<DriverAssignmentForTripResponse>> getDriverAssignmentForTrip(
+            @PathVariable String id) {
 
-        ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>();
+        ApiResponse<DriverAssignmentForTripResponse> apiResponse = new ApiResponse<>();
 
-        apiResponse.setMessage("Customer retrieved successfully");
+        apiResponse.setMessage("Driver assignment for trip retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());
-        apiResponse.setResult(customerService.getCustomer(customerId));
+        apiResponse.setResult(driverAssignmentForTripService.getDriverAssignmentForTrip(id));
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @PutMapping("/{customerId}")
-    ResponseEntity<ApiResponse<CustomerResponse>> updateRoute(@PathVariable String customerId, @RequestBody CustomerUpdateRequest request)
+    @PutMapping("/{id}")
+    ResponseEntity<ApiResponse<DriverAssignmentForTripResponse>> updateDriverAssignmentForTrip(
+            @PathVariable String id, @RequestBody DriverAssignmentForTripUpdateRequest request)
     {
-        ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>();
+        ApiResponse<DriverAssignmentForTripResponse> apiResponse = new ApiResponse<>();
 
-        apiResponse.setMessage("Customer update successfully");
+        apiResponse.setMessage("Driver assignment for trip update successfully");
         apiResponse.setCode(HttpStatus.OK.value());
-        apiResponse.setResult(customerService.updateCustomer(request, customerId));
+        apiResponse.setResult(driverAssignmentForTripService.
+                updateDriverAssignmentForTrip(request, id));
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @PatchMapping("/{customerId}")
-    ResponseEntity<ApiResponse<CustomerResponse>> updatePatchCustomer(@PathVariable String customerId, @RequestBody CustomerUpdateRequest request)
-    {
-        ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>();
+//    @PatchMapping("/{customerId}")
+//    ResponseEntity<ApiResponse<CustomerResponse>> updatePatchCustomer(@PathVariable String customerId, @RequestBody CustomerUpdateRequest request)
+//    {
+//        ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>();
+//
+//        apiResponse.setMessage("Customer update successfully");
+//        apiResponse.setCode(HttpStatus.OK.value());
+//        apiResponse.setResult(customerService.patchUpdateCustomer(request, customerId));
+//
+//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+//    }
 
-        apiResponse.setMessage("Customer update successfully");
-        apiResponse.setCode(HttpStatus.OK.value());
-        apiResponse.setResult(customerService.patchUpdateCustomer(request, customerId));
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> deleteDriverAssignmentForTrip(@PathVariable String id) {
 
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{customerId}")
-    ResponseEntity<Void> deleteCustomer(@PathVariable String customerId) {
-
-        customerService.deleteCustomer(customerId);
+        driverAssignmentForTripService.deleteDriverAssignmentForTrip(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

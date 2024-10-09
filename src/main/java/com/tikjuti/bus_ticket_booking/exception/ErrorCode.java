@@ -22,6 +22,8 @@ public enum ErrorCode {
 	USERNAME_EXISTED(400, "Username existed", HttpStatus.BAD_REQUEST),
 	EMAIL_EXISTED(400, "Email existed", HttpStatus.BAD_REQUEST),
 	PHONE_EXISTED(400, "Phone existed", HttpStatus.BAD_REQUEST),
+	DRIVER_CAN_NOT_OPERATE_VEHICLE(400, "Driver can not operate vehicle", HttpStatus.BAD_REQUEST),
+	DRIVER_ASSIGNMENT_FOR_TRIP_EXISTED(400, "Driver assignment for trip existed", HttpStatus.BAD_REQUEST),
 	EMPLOYEE_NOT_A_DRIVER(400, "Employee is not a driver", HttpStatus.BAD_REQUEST),
 	NATIONAL_ID_NUMBER_EXISTED(400, "National ID number existed", HttpStatus.BAD_REQUEST),
 	INVALID_KEY(400, "Invalid message key", HttpStatus.BAD_REQUEST),

@@ -1,25 +1,19 @@
 package com.tikjuti.bus_ticket_booking.service;
 
-import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.response.CustomerResponse;
+import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForVehicle.DriverAssignmentForVehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.DriverAssignmentForTripResponse;
-import com.tikjuti.bus_ticket_booking.entity.Account;
-import com.tikjuti.bus_ticket_booking.entity.Customer;
-import com.tikjuti.bus_ticket_booking.entity.DriverAssignmentForTrip;
+import com.tikjuti.bus_ticket_booking.entity.*;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
-import com.tikjuti.bus_ticket_booking.mapper.CustomerMapper;
 import com.tikjuti.bus_ticket_booking.mapper.DriverAssignmentForTripMapper;
-import com.tikjuti.bus_ticket_booking.repository.CustomerRepository;
 import com.tikjuti.bus_ticket_booking.repository.DriverAssignmentForTripRepository;
+import com.tikjuti.bus_ticket_booking.repository.EmployeeRepository;
+import com.tikjuti.bus_ticket_booking.repository.TripRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -28,41 +22,61 @@ public class DriverAssignmentForTripService {
     private DriverAssignmentForTripRepository driverAssignmentForTripRepository;
 
     @Autowired
-    private DriverAssignmentForTripMapper driverAssignmentForTripMapper;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
-    private AccountService accountService;
+    private TripRepository tripRepository;
 
-//    public DriverAssignmentForTrip createDriverAssignmentForTrip(
-//            DriverAssignmentForTripCreationRequest request)
-//    {
-//        if(customerRepository.existsByEmail(request.getEmail()))
-//            throw new AppException(ErrorCode.EMAIL_EXISTED);
-//
-//        if(customerRepository.existsByPhone(request.getPhone()))
-//            throw new AppException(ErrorCode.PHONE_EXISTED);
-//
-//        AccountCreationRequest requestAccount = new AccountCreationRequest();
-//        requestAccount.setUsername(request.getUsername());
-//        requestAccount.setPassword(request.getPassword());
-//        requestAccount.setRole(request.getRole());
-//
-//        Account account = accountService.createAccount(requestAccount);
-//
-//        LocalDate dob = LocalDate.parse(request.getDob().trim(), dateFormatter);
-//
-//        Customer customer = new Customer();
-//
-//        customer.setAccount(account);
-//        customer.setAddress(request.getAddress());
-//        customer.setEmail(request.getEmail());
-//        customer.setCustomerName(request.getCustomerName());
-//        customer.setPhone(request.getPhone());
-//        customer.setGender(request.getGender());
-//        customer.setDob(dob);
-//
-//        return customerRepository.save(customer);
-//    }
+    @Autowired
+    private DriverAssignmentForTripMapper driverAssignmentForTripMapper;
+
+    public DriverAssignmentForTrip createDriverAssignmentForTrip(
+            DriverAssignmentForTripCreationRequest request)
+    {
+        Trip trip = tripRepository
+                .findById(request.getTripId())
+                .orElseThrow(() -> new RuntimeException("Trip not found"));
+
+        Employee employee = employeeRepository
+                .findById(request.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        boolean checkIsDriver = driverAssignmentForTripRepository.
+                checkIsDriver(employee.getId());
+
+//        Kiểm tra nhân viên có phải là tài xế không
+        if (checkIsDriver) {
+            throw new AppException(ErrorCode.EMPLOYEE_NOT_A_DRIVER);
+        }
+
+        boolean canDriverOperateVehicle = driverAssignmentForTripRepository.
+                canDriverOperateVehicle(
+                        request.getTripId(),
+                        request.getEmployeeId()
+                );
+//        Kiểm tra tài xế có đc phân công phụ trách xe không
+        if (canDriverOperateVehicle) {
+            throw new AppException(ErrorCode.DRIVER_CAN_NOT_OPERATE_VEHICLE);
+        }
+//        Kiểm tra xem tài xế đã được phân công cho chuyến đi chưa
+        boolean checkDriverAssignmentForTripExists = driverAssignmentForTripRepository.
+                checkDriverAssignmentForTripExists(
+                        request.getTripId(),
+                        request.getEmployeeId(),
+                        null
+                );
+
+        if (checkDriverAssignmentForTripExists) {
+            throw new AppException(ErrorCode.DRIVER_ASSIGNMENT_FOR_TRIP_EXISTED);
+        }
+
+        DriverAssignmentForTrip driverAssignmentForTrip = new DriverAssignmentForTrip();
+
+        driverAssignmentForTrip.setTrip(trip);
+        driverAssignmentForTrip.setEmployee(employee);
+
+        return driverAssignmentForTripRepository.save(driverAssignmentForTrip);
+    }
 
     public List<DriverAssignmentForTrip> getDriverAssignmentForTrips()
     {
@@ -72,35 +86,64 @@ public class DriverAssignmentForTripService {
     public DriverAssignmentForTripResponse getDriverAssignmentForTrip(String driverAssignmentForTripId)
     {
         return driverAssignmentForTripMapper
-                .toDriverAssignmentForTripResponse(driverAssignmentForTripRepository.findById(driverAssignmentForTripId)
+                .toDriverAssignmentForTripResponse(
+                        driverAssignmentForTripRepository.findById(driverAssignmentForTripId)
                 .orElseThrow(() -> new RuntimeException("Driver assignment for trip not found")));
     }
 
-//    public CustomerResponse updateCustomer(CustomerUpdateRequest request, String customerId)
-//    {
-//        Customer customer = customerRepository
-//                .findById(customerId)
-//                .orElseThrow(() -> new RuntimeException("Customer not found"));
-//
-//        if(customerRepository.existsByEmail(request.getEmail()))
-//            throw new AppException(ErrorCode.EMAIL_EXISTED);
-//
-//        if(customerRepository.existsByPhone(request.getPhone()))
-//            throw new AppException(ErrorCode.PHONE_EXISTED);
-//
-//        LocalDate dob = LocalDate.parse(request.getDob().trim(), dateFormatter);
-//
-//        customer.setAddress(request.getAddress());
-//        customer.setEmail(request.getEmail());
-//        customer.setCustomerName(request.getCustomerName());
-//        customer.setPhone(request.getPhone());
-//        customer.setGender(request.getGender());
-//        customer.setDob(dob);
-//
-//        return customerMapper
-//                .toCustomerResponse(customerRepository.save(customer));
-//    }
-//
+    public DriverAssignmentForTripResponse updateDriverAssignmentForTrip(
+            DriverAssignmentForTripUpdateRequest request, String id)
+    {
+        DriverAssignmentForTrip driverAssignmentForTrip = driverAssignmentForTripRepository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException("Driver assignment for trip not found"));
+
+        Trip trip = tripRepository
+                .findById(request.getTripId())
+                .orElseThrow(() -> new RuntimeException("Trip not found"));
+
+        Employee employee = employeeRepository
+                .findById(request.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        boolean checkIsDriver = driverAssignmentForTripRepository.
+                checkIsDriver(employee.getId());
+
+//        Kiểm tra nhân viên có phải là tài xế không
+        if (checkIsDriver) {
+            throw new AppException(ErrorCode.EMPLOYEE_NOT_A_DRIVER);
+        }
+
+        boolean canDriverOperateVehicle = driverAssignmentForTripRepository.
+                canDriverOperateVehicle(
+                        request.getTripId(),
+                        request.getEmployeeId()
+                );
+//        Kiểm tra tài xế có đc phân công phụ trách xe không
+        if (canDriverOperateVehicle) {
+            throw new AppException(ErrorCode.DRIVER_CAN_NOT_OPERATE_VEHICLE);
+        }
+//        Kiểm tra xem tài xế đã được phân công cho chuyến đi chưa
+        boolean checkDriverAssignmentForTripExists = driverAssignmentForTripRepository.
+                checkDriverAssignmentForTripExists(
+                        request.getTripId(),
+                        request.getEmployeeId(),
+                        null
+                );
+
+        if (checkDriverAssignmentForTripExists) {
+            throw new AppException(ErrorCode.DRIVER_ASSIGNMENT_FOR_TRIP_EXISTED);
+        }
+
+        driverAssignmentForTrip.setTrip(trip);
+        driverAssignmentForTrip.setEmployee(employee);
+
+        return driverAssignmentForTripMapper
+                .toDriverAssignmentForTripResponse(
+                        driverAssignmentForTripRepository.save(driverAssignmentForTrip)
+                );
+    }
+
 //    public CustomerResponse patchUpdateCustomer(CustomerUpdateRequest request, String customerId) {
 //        Customer customer = customerRepository
 //                .findById(customerId)
@@ -138,12 +181,12 @@ public class DriverAssignmentForTripService {
 //        return customerMapper.toCustomerResponse(customerRepository.save(customer));
 //    }
 //
-//    public void deleteCustomer(String customerId) {
-//        customerRepository.findById(customerId)
-//                .map(customer -> {
-//                    customerRepository.delete(customer);
-//                    return true;
-//                })
-//                .orElseThrow(() -> new RuntimeException("Customer not found for ID: " + customerId));
-//    }
+    public void deleteDriverAssignmentForTrip(String id) {
+        driverAssignmentForTripRepository.findById(id)
+                .map(driverAssignmentForTrip -> {
+                    driverAssignmentForTripRepository.delete(driverAssignmentForTrip);
+                    return true;
+                })
+                .orElseThrow(() -> new RuntimeException("Driver assignment for trip not found for ID: " + id));
+    }
 }
