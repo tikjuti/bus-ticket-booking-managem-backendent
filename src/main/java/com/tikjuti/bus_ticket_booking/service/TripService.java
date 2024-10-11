@@ -1,21 +1,31 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.dto.request.Trip.FindTripsUserRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.TripResponse;
+import com.tikjuti.bus_ticket_booking.dto.response.TripUserResponse;
 import com.tikjuti.bus_ticket_booking.entity.*;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
+import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.mapper.TripMapper;
 import com.tikjuti.bus_ticket_booking.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.crypto.Data;
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+
 
 
 @Service
@@ -31,6 +41,8 @@ public class TripService {
 
     @Autowired
     private TripMapper tripMapper;
+    @Autowired
+    private RouteMapper routeMapper;
 
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -98,6 +110,65 @@ public class TripService {
         return tripMapper.toTripResponse(tripRepository
                 .findById(tripId)
                 .orElseThrow(() -> new RuntimeException("Trip not found")));
+    }
+
+    @Transactional
+    public List<TripUserResponse> findTripsByUser(FindTripsUserRequest request) {
+        List<Object[]> trips = tripRepository.findTripsByUser(
+                request.getDepartureLocation(), request.getArrivalLocation(), request.getDepartureDate());
+
+        List<TripUserResponse> tripUserResponses = new ArrayList<>();
+
+        for (Object[] trip : trips) {
+            TripUserResponse tripUserResponse = new TripUserResponse();
+
+            java.sql.Date departureDateSql = (Date) trip[1];
+            Time departureTimeSql = (Time) trip[2];
+            java.sql.Date arrivalDateSql = (Date) trip[3];
+            Time arrivalTimeSql = (Time) trip[4];
+
+            LocalDate departureDate = departureDateSql.toLocalDate();
+            LocalTime departureTime = departureTimeSql.toLocalTime();
+            LocalDate arrivalDate = arrivalDateSql.toLocalDate();
+            LocalTime arrivalTime = arrivalTimeSql.toLocalTime();
+            
+            tripUserResponse.setTripId((String) trip[0]);
+            tripUserResponse.setDepartureDate(departureDate);
+            tripUserResponse.setDepartureTime(departureTime);
+            tripUserResponse.setArrivalDate(arrivalDate);
+            tripUserResponse.setArrivalTime(arrivalTime);
+
+            Vehicle vehicle = vehicleRepository
+                    .findById((String) trip[6])
+                    .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+            tripUserResponse.setVehicleName(vehicle.getVehicleName());
+
+            Route route = new Route();
+            route.setId((String) trip[7]);
+            route.setArrivalLocation((String) trip[8]);
+            route.setArrivalPoint((String) trip[9]);
+            route.setDepartureLocation((String) trip[10]);
+            route.setDeparturePoint((String) trip[11]);
+            route.setDistance((Integer) trip[12]);
+            route.setDuration((Integer) trip[13]);
+
+            RouteResponse routeResponse = routeMapper.toRouteResponse(route);
+
+            tripUserResponse.setRoute(routeResponse);
+
+            tripUserResponse.setTicketPrice(
+                    tripRepository.findTicketPrice(
+                            (String) trip[6],
+                            route.getId()));
+            tripUserResponse.setAvailableSeats(
+                    tripRepository.findAvailableSeatsByVehicleId(
+                            (String) trip[6]));
+
+            tripUserResponses.add(tripUserResponse);
+        }
+
+        return tripUserResponses;
     }
 
     public TripResponse updateTrip(TripUpdateRequest request, String tripId)

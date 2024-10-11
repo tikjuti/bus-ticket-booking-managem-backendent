@@ -1,9 +1,11 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.dto.request.Trip.FindTripsUserRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.TripResponse;
+import com.tikjuti.bus_ticket_booking.dto.response.TripUserResponse;
 import com.tikjuti.bus_ticket_booking.entity.Trip;
 import com.tikjuti.bus_ticket_booking.service.TripService;
 import jakarta.validation.Valid;
@@ -54,6 +56,18 @@ public class TripController {
         apiResponse.setMessage("Trip retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());
         apiResponse.setResult(tripService.getTrip(tripId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/findUser")
+    ResponseEntity<ApiResponse<List<TripUserResponse>>> getTripUserFind(@RequestBody FindTripsUserRequest request) {
+
+        ApiResponse<List<TripUserResponse>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Find trip user retrieved successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(tripService.findTripsByUser(request));
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
