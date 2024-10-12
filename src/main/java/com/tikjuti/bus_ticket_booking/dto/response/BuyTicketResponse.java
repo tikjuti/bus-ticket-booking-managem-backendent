@@ -17,7 +17,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TripUserResponse {
+public class BuyTicketResponse {
     String tripId;
     LocalDate departureDate;
     LocalTime departureTime;

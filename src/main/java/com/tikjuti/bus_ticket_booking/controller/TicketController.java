@@ -1,18 +1,14 @@
 
 package com.tikjuti.bus_ticket_booking.controller;
 
-import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Ticket.BuyTicketRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
-import com.tikjuti.bus_ticket_booking.dto.response.CustomerResponse;
+import com.tikjuti.bus_ticket_booking.dto.response.BuyTicketResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.TicketResponse;
-import com.tikjuti.bus_ticket_booking.entity.Customer;
 import com.tikjuti.bus_ticket_booking.entity.Ticket;
-import com.tikjuti.bus_ticket_booking.service.CustomerService;
 import com.tikjuti.bus_ticket_booking.service.TicketService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +21,18 @@ import java.util.List;
 public class TicketController {
     @Autowired
     private TicketService ticketService;
+
+    @GetMapping("/buyTicket")
+    ResponseEntity<ApiResponse<List<BuyTicketResponse>>> getTripUserFind(@RequestBody BuyTicketRequest request) {
+
+        ApiResponse<List<BuyTicketResponse>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Find ticket successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(ticketService.buyTicket(request));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 
     @PostMapping
     ResponseEntity<ApiResponse<Ticket>> createTicket(@RequestBody TicketCreationRequest request) {

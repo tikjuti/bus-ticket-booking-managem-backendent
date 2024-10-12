@@ -1,4 +1,4 @@
-package com.tikjuti.bus_ticket_booking.dto.request.Trip;
+package com.tikjuti.bus_ticket_booking.dto.request.Ticket;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FindTripsUserRequest {
+public class BuyTicketRequest {
     String departureLocation;
     String arrivalLocation;
     String departureDate;

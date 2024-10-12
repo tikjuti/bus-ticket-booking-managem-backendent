@@ -8,21 +8,21 @@ CREATE PROCEDURE canDriverOperateVehicle(
 )
 BEGIN
     DECLARE counts INT DEFAULT 0;
-    
+
     DECLARE vehicleId VARCHAR(255);
     DECLARE departureDate DATE;
-    
+
     -- Lấy mã xe và ngày giờ xuất phát của chuyến đi
     SELECT vehicle_id, departure_date
     INTO vehicleId, departureDate
-    FROM trip 
+    FROM trip
     WHERE id = tripId;
 
     -- Kiểm tra xem tài xế đã được phân công cho xe đó và thời gian phân công vẫn còn hiệu lực
     SELECT COUNT(*) INTO counts
     FROM driver_assignment_for_vehicle
-    WHERE employee_id = employeeId 
-      AND vehicle_id = vehicleId 
+    WHERE employee_id = employeeId
+      AND vehicle_id = vehicleId
       AND end_date >= departureDate;
 
     -- Nếu số lượng lớn hơn 0, tức là tài xế đã được phân công và không hợp lệ

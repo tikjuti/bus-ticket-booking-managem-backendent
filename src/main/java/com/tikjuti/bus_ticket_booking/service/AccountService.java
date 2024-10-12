@@ -1,19 +1,15 @@
 package com.tikjuti.bus_ticket_booking.service;
 
 import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.AccountResponse;
-import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
 import com.tikjuti.bus_ticket_booking.entity.Account;
-import com.tikjuti.bus_ticket_booking.entity.Route;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.AccountMapper;
-import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.repository.AccountRepository;
-import com.tikjuti.bus_ticket_booking.repository.RouteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,8 +28,9 @@ public class AccountService {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
 
         Account account = new Account();
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         account.setUsername(request.getUsername());
-        account.setPassword(request.getPassword());
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
         account.setRole(request.getRole().name());
 
         return accountRepository.save(account);

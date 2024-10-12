@@ -1,16 +1,23 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.dto.request.Ticket.BuyTicketRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.response.BuyTicketResponse;
+import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.TicketResponse;
 import com.tikjuti.bus_ticket_booking.entity.*;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
+import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.mapper.TicketMapper;
 import com.tikjuti.bus_ticket_booking.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -28,6 +35,8 @@ public class TicketService {
     private PaymentMethodRepository paymentMethodRepository;
     @Autowired
     private SeatRepository seatRepository;
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -37,9 +46,70 @@ public class TicketService {
 
     @Autowired
     private TicketMapper ticketMapper;
+    @Autowired
+    private RouteMapper routeMapper;
 
     DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    @Transactional
+    public List<BuyTicketResponse> buyTicket(BuyTicketRequest request) {
+        List<Object[]> trips = ticketRepository.findTripsByUser(
+                request.getDepartureLocation(), request.getArrivalLocation(), request.getDepartureDate());
+
+        List<BuyTicketResponse> buyTicketResponses = new ArrayList<>();
+
+        for (Object[] trip : trips) {
+            BuyTicketResponse buyTicketResponse = new BuyTicketResponse();
+
+            java.sql.Date departureDateSql = (Date) trip[1];
+            Time departureTimeSql = (Time) trip[2];
+            java.sql.Date arrivalDateSql = (Date) trip[3];
+            Time arrivalTimeSql = (Time) trip[4];
+
+            LocalDate departureDate = departureDateSql.toLocalDate();
+            LocalTime departureTime = departureTimeSql.toLocalTime();
+            LocalDate arrivalDate = arrivalDateSql.toLocalDate();
+            LocalTime arrivalTime = arrivalTimeSql.toLocalTime();
+
+            buyTicketResponse.setTripId((String) trip[0]);
+            buyTicketResponse.setDepartureDate(departureDate);
+            buyTicketResponse.setDepartureTime(departureTime);
+            buyTicketResponse.setArrivalDate(arrivalDate);
+            buyTicketResponse.setArrivalTime(arrivalTime);
+
+            Vehicle vehicle = vehicleRepository
+                    .findById((String) trip[6])
+                    .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+            buyTicketResponse.setVehicleName(vehicle.getVehicleName());
+
+            Route route = new Route();
+            route.setId((String) trip[7]);
+            route.setArrivalLocation((String) trip[8]);
+            route.setArrivalPoint((String) trip[9]);
+            route.setDepartureLocation((String) trip[10]);
+            route.setDeparturePoint((String) trip[11]);
+            route.setDistance((Integer) trip[12]);
+            route.setDuration((Integer) trip[13]);
+
+            RouteResponse routeResponse = routeMapper.toRouteResponse(route);
+
+            buyTicketResponse.setRoute(routeResponse);
+
+            buyTicketResponse.setTicketPrice(
+                    ticketRepository.findTicketPrice(
+                            (String) trip[6],
+                            route.getId()));
+            buyTicketResponse.setAvailableSeats(
+                    ticketRepository.findAvailableSeatsByVehicleId(
+                            (String) trip[6]));
+
+            buyTicketResponses.add(buyTicketResponse);
+        }
+
+        return buyTicketResponses;
+    }
 
     public Ticket createTicket(TicketCreationRequest request)
     {
@@ -47,12 +117,17 @@ public class TicketService {
 
         Customer customer;
         if (request.getEmployeeId() == null) {
-            customer = new Customer();
-            customer.setCustomerName(request.getCustomerName());
-            customer.setPhone(request.getPhone());
-            customer.setEmail(request.getEmail());
 
-            customerRepository.save(customer);
+            if (customerRepository.findByEmailOrPhone(request.getEmail(), request.getPhone()) != null) {
+                customer = customerRepository.findByEmailOrPhone(request.getEmail(), request.getPhone());
+            } else {
+                customer = new Customer();
+                customer.setCustomerName(request.getCustomerName());
+                customer.setPhone(request.getPhone());
+                customer.setEmail(request.getEmail());
+
+                customerRepository.save(customer);
+            }
         } else {
             customer = customerRepository
                     .findById(request.getCustomerId())
