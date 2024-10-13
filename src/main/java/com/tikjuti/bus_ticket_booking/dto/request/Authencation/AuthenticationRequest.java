@@ -1,4 +1,4 @@
-package com.tikjuti.bus_ticket_booking.dto.request.Account;
+package com.tikjuti.bus_ticket_booking.dto.request.Authencation;
 
 import com.tikjuti.bus_ticket_booking.enums.AccountRole;
 import jakarta.validation.constraints.Size;

@@ -29,6 +29,7 @@ public enum ErrorCode {
 	NATIONAL_ID_NUMBER_EXISTED(400, "National ID number existed", HttpStatus.BAD_REQUEST),
 	INVALID_KEY(400, "Invalid message key", HttpStatus.BAD_REQUEST),
 	UNCATEGORIZED_EXCEPTION(500, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
+	UNAUTHENTICATED(401, "Unauthenticated", HttpStatus.UNAUTHORIZED),
 
 	INVALID_DATE_TIME(404, "Invalid date time", HttpStatus.BAD_REQUEST),
 	INVALID_DATE(404, "Invalid date", HttpStatus.BAD_REQUEST),
