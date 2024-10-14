@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +17,5 @@ import lombok.experimental.FieldDefaults;
 public class AccountResponse {
     String id;
     String username;
-    String password;
-    String role;
+    Set<String> roles;
 }

@@ -4,24 +4,26 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Set;
-
+import java.util.Date;
 
 @Entity
-@Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Account {
+public class ForgotPassword {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    String fpId;
 
-    String username;
-    String password;
-    Set<String> roles;
+    @Column(nullable = false)
+    Integer otp;
 
-    @OneToOne(mappedBy = "account")
-    ForgotPassword forgotPassword;
+    @Column(nullable = false)
+    Date expirationTime;
+
+    @OneToOne
+    Account account;
+
 }

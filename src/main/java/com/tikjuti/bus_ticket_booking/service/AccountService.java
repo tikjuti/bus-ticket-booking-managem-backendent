@@ -3,18 +3,21 @@ package com.tikjuti.bus_ticket_booking.service;
 import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.AccountResponse;
 import com.tikjuti.bus_ticket_booking.entity.Account;
+import com.tikjuti.bus_ticket_booking.enums.AccountRole;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.AccountMapper;
 import com.tikjuti.bus_ticket_booking.repository.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
+@Slf4j
 public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
@@ -22,17 +25,23 @@ public class AccountService {
     @Autowired
     private AccountMapper accountMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public Account createAccount(AccountCreationRequest request)
     {
         if(accountRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USERNAME_EXISTED);
 
         Account account = new Account();
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         account.setUsername(request.getUsername());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-        account.setRole(request.getRole().name());
 
+        HashSet<AccountRole> rolesEnum = (HashSet<AccountRole>) request.getRoles();
+        HashSet<String> roles = new HashSet<>();
+        rolesEnum.forEach(role -> roles.add(role.name()));
+
+        account.setRoles(roles);
         return accountRepository.save(account);
     }
 
@@ -45,7 +54,7 @@ public class AccountService {
                         .orElseThrow(() -> new RuntimeException("Account not found")));
     }
 
-//    public RouteResponse updateRoute(RouteUpdateRequest request, String routeId)
+//    public AccountResponse updateAccount(RouteUpdateRequest request, String routeId)
 //    {
 //        Route route = routeRepository
 //                .findById(routeId)

@@ -191,7 +191,6 @@ public class TicketService {
                                 .orElseThrow(() -> new RuntimeException("Ticket not found")));
     }
 
-
     public TicketResponse updateTicket(TicketUpdateRequest request, String id)
     {
         Ticket ticket = ticketRepository

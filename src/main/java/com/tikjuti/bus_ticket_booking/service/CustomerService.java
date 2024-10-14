@@ -3,19 +3,25 @@ package com.tikjuti.bus_ticket_booking.service;
 import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.response.AccountResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.CustomerResponse;
 import com.tikjuti.bus_ticket_booking.entity.*;
+import com.tikjuti.bus_ticket_booking.enums.AccountRole;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.CustomerMapper;
 import com.tikjuti.bus_ticket_booking.repository.CustomerRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 
+@Slf4j
 @Service
 public class CustomerService {
     @Autowired
@@ -40,7 +46,11 @@ public class CustomerService {
         AccountCreationRequest requestAccount = new AccountCreationRequest();
         requestAccount.setUsername(request.getUsername());
         requestAccount.setPassword(request.getPassword());
-        requestAccount.setRole(request.getRole());
+
+        HashSet<AccountRole> roles = new HashSet<>();
+        roles.add(AccountRole.GUEST);
+
+        requestAccount.setRoles(roles);
 
         Account account = accountService.createAccount(requestAccount);
 
@@ -59,7 +69,9 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    public List<Customer> getCustomers() {return  customerRepository.findAll();}
+    public List<Customer> getCustomers() {
+        return  customerRepository.findAll();
+    }
 
     public CustomerResponse getCustomer(String customerId)
     {

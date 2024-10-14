@@ -4,7 +4,6 @@ import com.tikjuti.bus_ticket_booking.dto.request.Employee.EmployeeCreationReque
 import com.tikjuti.bus_ticket_booking.dto.request.Employee.EmployeeUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.EmployeeResponse;
 import com.tikjuti.bus_ticket_booking.entity.Account;
-import com.tikjuti.bus_ticket_booking.entity.Customer;
 import com.tikjuti.bus_ticket_booking.entity.Employee;
 import com.tikjuti.bus_ticket_booking.entity.EmployeeType;
 import com.tikjuti.bus_ticket_booking.exception.AppException;

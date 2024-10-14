@@ -3,6 +3,7 @@ package com.tikjuti.bus_ticket_booking.exception;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,6 +48,19 @@ public class GlobalExceptionHandler {
 		
 		return ResponseEntity
 				.status(errorCode.getStatusCode())
+				.body(apiResponse);
+	}
+
+	@ExceptionHandler(value = AccessDeniedException.class)
+	ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception)
+	{
+		ApiResponse apiResponse = new ApiResponse();
+
+		apiResponse.setCode(ErrorCode.UNAUTHORIZED.getCode());
+		apiResponse.setMessage(ErrorCode.UNAUTHORIZED.getMessage());
+
+		return ResponseEntity
+				.status(ErrorCode.UNAUTHORIZED.getStatusCode())
 				.body(apiResponse);
 	}
 	

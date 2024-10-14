@@ -25,7 +25,6 @@ public class TicketCreationRequest {
     String seatId;
     String employeeId;
 
-//    Nếu khách hàng không có tài khoản
     String customerName;
     String phone;
     String email;

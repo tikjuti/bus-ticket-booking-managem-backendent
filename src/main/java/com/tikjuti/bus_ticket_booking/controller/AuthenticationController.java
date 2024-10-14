@@ -4,6 +4,7 @@ package com.tikjuti.bus_ticket_booking.controller;
 import com.nimbusds.jose.JOSEException;
 import com.tikjuti.bus_ticket_booking.dto.request.Authencation.AuthenticationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Authencation.IntrospectRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Authencation.LogoutRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.AuthenticationResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.IntrospectResponse;
@@ -52,29 +53,17 @@ public class AuthenticationController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-//    @GetMapping
-//    ResponseEntity<ApiResponse<List<Account>>> getAccounts()
-//    {
-//        List<Account> accountList = accountService.getAccounts();
-//
-//        ApiResponse<List<Account>> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Accounts retrieved successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(accountList);
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/{accountId}")
-//    ResponseEntity<ApiResponse<AccountResponse>> getRoute(@PathVariable String accountId) {
-//
-//        ApiResponse<AccountResponse> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Account retrieved successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(accountService.getAccount(accountId));
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
+    @PostMapping("/logout")
+    ResponseEntity<ApiResponse<Void>> logout(@RequestBody LogoutRequest request)
+            throws JOSEException, ParseException {
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>();
+
+        authenticationService.logout(request);
+
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setMessage("Logout successfully");
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }

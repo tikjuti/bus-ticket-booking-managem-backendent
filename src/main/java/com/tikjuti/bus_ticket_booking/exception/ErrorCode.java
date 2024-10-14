@@ -30,6 +30,7 @@ public enum ErrorCode {
 	INVALID_KEY(400, "Invalid message key", HttpStatus.BAD_REQUEST),
 	UNCATEGORIZED_EXCEPTION(500, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
 	UNAUTHENTICATED(401, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+	UNAUTHORIZED(401, "You do not have permission", HttpStatus.FORBIDDEN),
 
 	INVALID_DATE_TIME(404, "Invalid date time", HttpStatus.BAD_REQUEST),
 	INVALID_DATE(404, "Invalid date", HttpStatus.BAD_REQUEST),

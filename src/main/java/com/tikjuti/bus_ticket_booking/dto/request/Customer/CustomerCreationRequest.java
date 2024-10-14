@@ -24,5 +24,4 @@ public class CustomerCreationRequest {
     String username;
     @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
-    AccountRole role;
 }
