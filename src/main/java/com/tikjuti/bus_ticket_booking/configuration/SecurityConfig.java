@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -27,7 +29,9 @@ public class SecurityConfig {
             "/api/auth/introspect",
             "/api/tickets",
             "/api/auth/logout",
-            "/api/password/verifyEmail/{email}"
+            "/api/password/verifyEmail/{email}",
+            "/api/password/verifyOtp/{otp}/{email}",
+            "/api/password/changePassword/{email}"
     };
 
     @Bean
@@ -36,7 +40,6 @@ public class SecurityConfig {
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tickets/buyTicket").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tickets/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/customers").hasRole(AccountRole.ADMIN.name())
 
                         .anyRequest().authenticated());
 

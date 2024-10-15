@@ -31,6 +31,8 @@ public enum ErrorCode {
 	UNCATEGORIZED_EXCEPTION(500, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
 	UNAUTHENTICATED(401, "Unauthenticated", HttpStatus.UNAUTHORIZED),
 	UNAUTHORIZED(401, "You do not have permission", HttpStatus.FORBIDDEN),
+	OTP_EXPIRED(404, "OTP expired", HttpStatus.EXPECTATION_FAILED),
+	PASSWORD_NOT_MATCH(404, "Password not match", HttpStatus.BAD_REQUEST),
 
 	INVALID_DATE_TIME(404, "Invalid date time", HttpStatus.BAD_REQUEST),
 	INVALID_DATE(404, "Invalid date", HttpStatus.BAD_REQUEST),
