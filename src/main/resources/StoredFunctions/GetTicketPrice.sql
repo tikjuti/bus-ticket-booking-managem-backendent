@@ -1,5 +1,3 @@
-DELIMITER //
-
 CREATE FUNCTION GetTicketPrice(
 	vehicleId VARCHAR(255),
     routeId VARCHAR(255)
@@ -20,6 +18,4 @@ BEGIN
     AND route.id = routeId;
 
     RETURN ticketPrice;
-END //
-
-DELIMITER ;
+END;

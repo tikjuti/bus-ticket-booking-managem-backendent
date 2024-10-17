@@ -15,6 +15,7 @@ import com.tikjuti.bus_ticket_booking.repository.PriceRepository;
 import com.tikjuti.bus_ticket_booking.repository.RouteRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class PriceService {
     @Autowired
     private RouteMapper routeMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Price createPrice(PriceCreationRequest request)
     {
         Price price = new Price();
@@ -75,6 +77,7 @@ public class PriceService {
                 .orElseThrow(() -> new RuntimeException("Price not found")));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public PriceResponse updatePrice(PriceUpdateRequest request, String priceId)
     {
         Price price = priceRepository
@@ -106,6 +109,7 @@ public class PriceService {
                 .toPriceResponse(priceRepository.save(price));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public PriceResponse patchUpdatePrice(PriceUpdateRequest request, String priceId) {
         Price price = priceRepository
                 .findById(priceId)
@@ -141,7 +145,7 @@ public class PriceService {
         return priceMapper.toPriceResponse(priceRepository.save(price));
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     public void deletePrice(String priceId) {
         priceRepository.findById(priceId)
                 .map(price -> {

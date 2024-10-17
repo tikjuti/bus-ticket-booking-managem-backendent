@@ -46,7 +46,8 @@ public class ForgotPasswordController {
     }
 
     @PostMapping("/changePassword/{email}")
-    ResponseEntity<ApiResponse<Void>> changePassword(@PathVariable String email, @RequestBody ChangePassword changePassword) {
+    ResponseEntity<ApiResponse<Void>> changePassword(@PathVariable String email,
+                                                     @RequestBody ChangePassword changePassword) {
         ApiResponse<Void> apiResponse = new ApiResponse<>();
 
         forgotPasswordService.changePassword(email, changePassword);

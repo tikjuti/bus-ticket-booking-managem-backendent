@@ -9,6 +9,7 @@ import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.VehicleTypeMapper;
 import com.tikjuti.bus_ticket_booking.repository.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class VehicleTypeService {
     @Autowired
     private VehicleTypeMapper vehicleTypeMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public VehicleType createVehicleType(VehicleTypeCreationRequest request)
     {
         if(vehicleTypeRepository.existsByVehicleTypeName(request.getVehicleTypeName()))
@@ -32,8 +34,10 @@ public class VehicleTypeService {
                 .save(vehicleType);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<VehicleType> getVehicleTypes() {return  vehicleTypeRepository.findAll();}
 
+    @PreAuthorize("hasRole('ADMIN')")
     public VehicleTypeResponse getVehicleType(String vehicleTypeId)
     {
         return vehicleTypeMapper
@@ -41,6 +45,7 @@ public class VehicleTypeService {
                 .orElseThrow(() -> new RuntimeException("Vehicle type not found")));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public VehicleTypeResponse updateVehicleType(VehicleTypeUpdateRequest request, String vehicleTypeId)
     {
         VehicleType vehicleType = vehicleTypeRepository
@@ -56,6 +61,7 @@ public class VehicleTypeService {
                 .toVehicleTypeResponse(vehicleTypeRepository.save(vehicleType));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteVehicleType(String vehicleTypeId) {
         vehicleTypeRepository.findById(vehicleTypeId)
                 .map(vehicleType -> {

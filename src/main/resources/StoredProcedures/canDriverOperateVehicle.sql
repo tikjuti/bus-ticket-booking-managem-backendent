@@ -1,6 +1,3 @@
-USE bus_ticket_booking;
-DELIMITER //
-
 CREATE PROCEDURE canDriverOperateVehicle(
     IN tripId VARCHAR(255),
     IN employeeId VARCHAR(255),
@@ -8,7 +5,6 @@ CREATE PROCEDURE canDriverOperateVehicle(
 )
 BEGIN
     DECLARE counts INT DEFAULT 0;
-
     DECLARE vehicleId VARCHAR(255);
     DECLARE departureDate DATE;
 
@@ -31,7 +27,4 @@ BEGIN
     ELSE
         SET isValid = 1; -- Hợp lệ (có thể phân công)
     END IF;
-
-END //
-
-DELIMITER ;
+END;

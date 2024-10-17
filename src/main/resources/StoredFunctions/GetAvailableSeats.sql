@@ -1,5 +1,3 @@
-DELIMITER //
-
 CREATE FUNCTION GetAvailableSeats(vehicleId VARCHAR(255))
 RETURNS INT
 DETERMINISTIC
@@ -25,6 +23,4 @@ BEGIN
 
     -- Return the number of available seats
     RETURN totalSeats - bookedSeats;
-END //
-
-DELIMITER ;
+END;

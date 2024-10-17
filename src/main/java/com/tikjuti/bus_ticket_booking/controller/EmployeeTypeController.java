@@ -62,7 +62,8 @@ public class EmployeeTypeController {
     }
 
     @PutMapping("/{employeeTypeId}")
-    ResponseEntity<ApiResponse<EmployeeTypeResponse>> updateEmployeeType(@PathVariable String employeeTypeId, @RequestBody EmployeeTypeUpdateRequest request)
+    ResponseEntity<ApiResponse<EmployeeTypeResponse>> updateEmployeeType(@PathVariable String employeeTypeId,
+                                                                         @RequestBody EmployeeTypeUpdateRequest request)
     {
         ApiResponse<EmployeeTypeResponse> apiResponse = new ApiResponse<>();
 

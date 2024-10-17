@@ -10,6 +10,7 @@ import com.tikjuti.bus_ticket_booking.mapper.SeatMapper;
 import com.tikjuti.bus_ticket_booking.repository.SeatRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 
@@ -24,6 +25,7 @@ public class SeatService {
     @Autowired
     private SeatMapper seatMapper;
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public SeatResponse updateSeat(SeatUpdateRequest request, String seatId)
     {
         Seat seat = seatRepository
@@ -51,6 +53,7 @@ public class SeatService {
                 .toSeatResponse(seatRepository.save(seat));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public SeatResponse patchUpdateSeat(SeatUpdateRequest request, String seatId) {
         Seat seat = seatRepository
                 .findById(seatId)

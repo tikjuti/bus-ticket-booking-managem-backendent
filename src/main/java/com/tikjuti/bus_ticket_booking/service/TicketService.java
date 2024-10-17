@@ -13,6 +13,7 @@ import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.mapper.TicketMapper;
 import com.tikjuti.bus_ticket_booking.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -179,6 +180,7 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public List<Ticket> getTickets()
     {
         return  ticketRepository.findAll();

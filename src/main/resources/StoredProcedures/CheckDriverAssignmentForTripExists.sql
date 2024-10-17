@@ -1,6 +1,3 @@
-USE bus_ticket_booking;
-DELIMITER //
-
 CREATE PROCEDURE CheckDriverAssignmentForTripExists(
     IN tripId VARCHAR(255),
     IN employeeId VARCHAR(255),
@@ -39,6 +36,4 @@ BEGIN
         SET isValid = 0; -- Hợp lệ
     END IF;
 
-END //
-
-DELIMITER ;
+END;

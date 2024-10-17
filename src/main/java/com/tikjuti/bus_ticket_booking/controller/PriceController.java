@@ -63,7 +63,8 @@ public class PriceController {
     }
 
     @PutMapping("/{priceId}")
-    ResponseEntity<ApiResponse<PriceResponse>> updatePrice(@PathVariable String priceId, @RequestBody PriceUpdateRequest request)
+    ResponseEntity<ApiResponse<PriceResponse>> updatePrice(@PathVariable String priceId,
+                                                           @RequestBody PriceUpdateRequest request)
     {
         ApiResponse<PriceResponse> apiResponse = new ApiResponse<>();
 
@@ -75,7 +76,8 @@ public class PriceController {
     }
 
     @PatchMapping("/{priceId}")
-    ResponseEntity<ApiResponse<PriceResponse>> updatePatchPrice(@PathVariable String priceId, @RequestBody PriceUpdateRequest request)
+    ResponseEntity<ApiResponse<PriceResponse>> updatePatchPrice(@PathVariable String priceId,
+                                                                @RequestBody PriceUpdateRequest request)
     {
         ApiResponse<PriceResponse> apiResponse = new ApiResponse<>();
 

@@ -13,6 +13,8 @@ import com.tikjuti.bus_ticket_booking.repository.AccountRepository;
 import com.tikjuti.bus_ticket_booking.repository.EmployeeRepository;
 import com.tikjuti.bus_ticket_booking.repository.EmployeeTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,6 +37,7 @@ public class EmployeeService {
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Employee createEmployee(EmployeeCreationRequest request)
     {
         if(employeeRepository.existsByEmail(request.getEmail()))
@@ -67,8 +70,10 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Employee> getEmployees() {return  employeeRepository.findAll();}
 
+    @PostAuthorize("returnObject.account.username == authentication.name || hasRole('ADMIN')")
     public EmployeeResponse getEmployee(String employeeId)
     {
         return employeeMapper
@@ -76,6 +81,7 @@ public class EmployeeService {
                 .orElseThrow(() -> new RuntimeException("Employee not found")));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public EmployeeResponse updateEmployee(EmployeeUpdateRequest request, String employeeId)
     {
         Employee employee = employeeRepository
@@ -116,6 +122,7 @@ public class EmployeeService {
                 .toEmployeeResponse(employeeRepository.save(employee));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public EmployeeResponse patchUpdateEmployee(EmployeeUpdateRequest request, String employeeId) {
         Employee employee = employeeRepository
                 .findById(employeeId)
@@ -177,6 +184,7 @@ public class EmployeeService {
         return employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteEmployee(String employeeId) {
         employeeRepository.findById(employeeId)
                 .map(employee -> {

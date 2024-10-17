@@ -58,7 +58,8 @@ public class RouteController {
     }
 
     @PutMapping("/{routeId}")
-    ResponseEntity<ApiResponse<RouteResponse>> updateRoute(@PathVariable String routeId, @RequestBody RouteUpdateRequest request)
+    ResponseEntity<ApiResponse<RouteResponse>> updateRoute(@PathVariable String routeId,
+                                                           @RequestBody RouteUpdateRequest request)
     {
         ApiResponse<RouteResponse> apiResponse = new ApiResponse<>();
 
@@ -70,7 +71,8 @@ public class RouteController {
     }
 
     @PatchMapping("/{routeId}")
-    ResponseEntity<ApiResponse<RouteResponse>> updatePatchRoute(@PathVariable String routeId, @RequestBody RouteUpdateRequest request)
+    ResponseEntity<ApiResponse<RouteResponse>> updatePatchRoute(@PathVariable String routeId,
+                                                                @RequestBody RouteUpdateRequest request)
     {
         ApiResponse<RouteResponse> apiResponse = new ApiResponse<>();
 

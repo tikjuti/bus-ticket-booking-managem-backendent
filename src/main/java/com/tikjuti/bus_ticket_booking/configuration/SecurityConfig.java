@@ -1,6 +1,5 @@
 package com.tikjuti.bus_ticket_booking.configuration;
 
-import com.tikjuti.bus_ticket_booking.enums.AccountRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,23 +22,34 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecoder jwtDecoder;
 
-    private final String[] PUBLIC_ENDPOINTS = {
+    private final String[] PUBLIC_ENDPOINTS_POST = {
             "/api/customers",
             "/api/auth/token",
             "/api/auth/introspect",
-            "/api/tickets",
             "/api/auth/logout",
+            "/api/tickets",
             "/api/password/verifyEmail/{email}",
             "/api/password/verifyOtp/{otp}/{email}",
-            "/api/password/changePassword/{email}"
+            "/api/password/changePassword/{email}",
+            "/api/momoPayment/create"
+    };
+
+    private final String[] PUBLIC_ENDPOINTS_GET = {
+            "/api/tickets/buyTicket",
+            "/api/tickets/{id}",
+            "/api/vehicles/{id}",
+            "/api/paymentMethods",
+            "/api/paymentMethods/{id}",
+            "/api/prices",
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/tickets/buyTicket").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/tickets/{id}").permitAll()
+                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS_POST).permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/customers/{id}").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/customers/{id}").permitAll()
 
                         .anyRequest().authenticated());
 

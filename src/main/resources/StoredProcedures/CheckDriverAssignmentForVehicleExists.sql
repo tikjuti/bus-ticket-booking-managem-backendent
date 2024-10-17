@@ -1,6 +1,3 @@
-USE bus_ticket_booking;
-DELIMITER //
-
 CREATE PROCEDURE CheckDriverAssignmentForVehicleExists(
     IN startDate DATE,
     IN endDate DATE,
@@ -27,6 +24,4 @@ BEGIN
         SET isValid = 0; -- Valid
     END IF;
 
-END //
-
-DELIMITER ;
+END;

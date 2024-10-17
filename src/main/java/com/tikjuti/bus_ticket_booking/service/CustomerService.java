@@ -3,7 +3,6 @@ package com.tikjuti.bus_ticket_booking.service;
 import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
-import com.tikjuti.bus_ticket_booking.dto.response.AccountResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.CustomerResponse;
 import com.tikjuti.bus_ticket_booking.entity.*;
 import com.tikjuti.bus_ticket_booking.enums.AccountRole;
@@ -13,7 +12,8 @@ import com.tikjuti.bus_ticket_booking.mapper.CustomerMapper;
 import com.tikjuti.bus_ticket_booking.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -69,10 +69,12 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public List<Customer> getCustomers() {
         return  customerRepository.findAll();
     }
 
+    @PostAuthorize("returnObject.account.username == authentication.name || hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public CustomerResponse getCustomer(String customerId)
     {
         return customerMapper
@@ -142,6 +144,7 @@ public class CustomerService {
         return customerMapper.toCustomerResponse(customerRepository.save(customer));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public void deleteCustomer(String customerId) {
         customerRepository.findById(customerId)
                 .map(customer -> {

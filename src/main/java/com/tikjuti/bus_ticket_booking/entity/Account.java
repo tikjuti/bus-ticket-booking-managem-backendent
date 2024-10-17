@@ -1,5 +1,6 @@
 package com.tikjuti.bus_ticket_booking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,7 @@ public class Account {
     String password;
     Set<String> roles;
 
-    @OneToOne(mappedBy = "account")
+    @JsonIgnore
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     ForgotPassword forgotPassword;
 }

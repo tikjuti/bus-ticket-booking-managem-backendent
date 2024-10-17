@@ -16,6 +16,7 @@ import com.tikjuti.bus_ticket_booking.repository.SeatRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -39,6 +40,7 @@ public class VehicleService {
     @Autowired
     private SeatMapper seatMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Vehicle  createVehicle (VehicleCreationRequest request)
     {
         if (vehicleRepository.existsByLicensePlate(request.getLicensePlate()))
@@ -73,6 +75,7 @@ public class VehicleService {
         return savedVehicle;
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public List<Vehicle> getVehicles() {return vehicleRepository.findAll();}
 
     public VehicleResponse getVehicle(String vehicleId)
@@ -88,6 +91,7 @@ public class VehicleService {
         return vehicleResponse;
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public VehicleResponse updateVehicle(VehicleUpdateRequest request, String vehicleId)
     {
         Vehicle vehicle = vehicleRepository
@@ -104,6 +108,8 @@ public class VehicleService {
         return vehicleMapper
                 .toVehicleResponse(vehicleRepository.save(vehicle));
     }
+
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public VehicleResponse patchUpdateRoute(VehicleUpdateRequest request, String vehicleId) {
         Vehicle vehicle = vehicleRepository
                 .findById(vehicleId)
@@ -131,7 +137,7 @@ public class VehicleService {
         return vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteVehicle(String vehicleId) {
         vehicleRepository.findById(vehicleId)
                 .map(vehicle -> {

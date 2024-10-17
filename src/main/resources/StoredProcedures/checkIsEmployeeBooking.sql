@@ -1,6 +1,3 @@
-USE bus_ticket_booking;
-DELIMITER //
-
 CREATE PROCEDURE checkIsEmployeeBooking(
     IN employeeId VARCHAR(255),
     OUT isValid BIT
@@ -23,6 +20,4 @@ BEGIN
         SET isValid = 1; --
     END IF;
 
-END //
-
-DELIMITER ;
+END;

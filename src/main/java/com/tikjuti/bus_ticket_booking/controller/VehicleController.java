@@ -58,7 +58,8 @@ public class VehicleController {
     }
 //
     @PutMapping("/{vehicleId}")
-    ResponseEntity<ApiResponse<VehicleResponse>> updateVehicle(@PathVariable String vehicleId, @RequestBody VehicleUpdateRequest request)
+    ResponseEntity<ApiResponse<VehicleResponse>> updateVehicle(@PathVariable String vehicleId,
+                                                               @RequestBody VehicleUpdateRequest request)
     {
         ApiResponse<VehicleResponse> apiResponse = new ApiResponse<>();
 
@@ -70,7 +71,8 @@ public class VehicleController {
     }
 
     @PatchMapping("/{vehicleId}")
-    ResponseEntity<ApiResponse<VehicleResponse>> updatePatchVehicle(@PathVariable String vehicleId, @RequestBody VehicleUpdateRequest request)
+    ResponseEntity<ApiResponse<VehicleResponse>> updatePatchVehicle(@PathVariable String vehicleId,
+                                                                    @RequestBody VehicleUpdateRequest request)
     {
         ApiResponse<VehicleResponse> apiResponse = new ApiResponse<>();
 

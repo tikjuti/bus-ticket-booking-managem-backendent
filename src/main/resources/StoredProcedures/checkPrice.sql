@@ -1,6 +1,3 @@
-USE bus_ticket_booking;
-DELIMITER //
-
 CREATE PROCEDURE checkPrice(
     IN vehicleType NVARCHAR(255),
     IN route NVARCHAR(255),
@@ -27,6 +24,4 @@ BEGIN
     ELSE
         SET isValid = 0; -- Valid
     END IF;
-END //
-
-DELIMITER ;
+END;

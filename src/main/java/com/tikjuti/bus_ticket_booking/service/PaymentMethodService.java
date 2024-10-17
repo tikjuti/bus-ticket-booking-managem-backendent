@@ -9,6 +9,7 @@ import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.PaymentMethodMapper;
 import com.tikjuti.bus_ticket_booking.repository.PaymentMethodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class PaymentMethodService {
     @Autowired
     private PaymentMethodMapper paymentMethodMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public PaymentMethod createPaymentMethod(PaymentMethodCreationRequest request)
     {
         if(paymentMethodRepository.existsByMethodName(request.getMethodName()))
@@ -41,6 +43,7 @@ public class PaymentMethodService {
                 .orElseThrow(() -> new RuntimeException("Payment method not found")));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public PaymentMethodResponse updatePaymentMethod(PaymentMethodUpdateRequest request, String paymentMethodId)
     {
         PaymentMethod paymentMethod = paymentMethodRepository
@@ -56,6 +59,7 @@ public class PaymentMethodService {
                 .toPaymentMethodResponse(paymentMethodRepository.save(paymentMethod));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deletePaymentMethod(String paymentMethodId) {
         paymentMethodRepository.findById(paymentMethodId)
                 .map(paymentMethod -> {

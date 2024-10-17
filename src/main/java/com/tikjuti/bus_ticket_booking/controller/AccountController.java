@@ -2,6 +2,7 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
 import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.AccountResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.entity.Account;
@@ -57,35 +58,35 @@ public class AccountController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-//    @PutMapping("/{routeId}")
-//    ResponseEntity<ApiResponse<RouteResponse>> updateRoute(@PathVariable String routeId, @RequestBody RouteUpdateRequest request)
-//    {
-//        ApiResponse<RouteResponse> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Route update successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(routeService.updateRoute(request, routeId));
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
-//
-//    @PatchMapping("/{routeId}")
-//    ResponseEntity<ApiResponse<RouteResponse>> updatePatchRoute(@PathVariable String routeId, @RequestBody RouteUpdateRequest request)
-//    {
-//        ApiResponse<RouteResponse> apiResponse = new ApiResponse<>();
-//
-//        apiResponse.setMessage("Route update successfully");
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(routeService.patchUpdateRoute(request, routeId));
-//
-//        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-//    }
-//
-//    @DeleteMapping("/{routeId}")
-//    ResponseEntity<Void> deleteRoute(@PathVariable String routeId) {
-//
-//        routeService.deleteRoute(routeId);
-//
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    @PutMapping("/{accountId}")
+    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable String accountId, @RequestBody AccountUpdateRequest request)
+    {
+        ApiResponse<AccountResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Account update successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(accountService.updateAccount(request, accountId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{accountId}")
+    ResponseEntity<ApiResponse<AccountResponse>> updatePatchAccount(@PathVariable String accountId, @RequestBody AccountUpdateRequest request)
+    {
+        ApiResponse<AccountResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Account update successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(accountService.patchUpdateAccount(request, accountId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{accountId}")
+    ResponseEntity<Void> deleteAccount(@PathVariable String accountId) {
+
+        accountService.deleteAccount(accountId);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

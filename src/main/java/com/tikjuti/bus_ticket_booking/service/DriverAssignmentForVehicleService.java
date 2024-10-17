@@ -13,6 +13,7 @@ import com.tikjuti.bus_ticket_booking.repository.DriverAssignmentForVehicleRepos
 import com.tikjuti.bus_ticket_booking.repository.EmployeeRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ public class DriverAssignmentForVehicleService {
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    @PreAuthorize("hasRole('ADMIN')")
     public DriverAssignmentForVehicle createDriverAssignmentForVehicle(
             DriverAssignmentForVehicleCreationRequest request)
     {
@@ -70,11 +72,13 @@ public class DriverAssignmentForVehicleService {
         return driverAssignmentForVehicleRepository.save(driverAssignmentForVehicle);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<DriverAssignmentForVehicle> getDriverAssignmentForVehicles()
     {
         return  driverAssignmentForVehicleRepository.findAll();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public DriverAssignmentForVehicleResponse getDriverAssignmentForVehicle(String driverAssignmentForVehicleId)
     {
         return driverAssignmentForVehicleMapper
@@ -82,6 +86,7 @@ public class DriverAssignmentForVehicleService {
                 .orElseThrow(() -> new RuntimeException("Driver assignment for vehicle not found")));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public DriverAssignmentForVehicleResponse updateDriverAssignmentForVehicle(
             DriverAssignmentForVehicleUpdateRequest request, String id)
     {
@@ -120,6 +125,7 @@ public class DriverAssignmentForVehicleService {
                         driverAssignmentForVehicleRepository.save(driverAssignmentForVehicle));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public DriverAssignmentForVehicleResponse patchUpdateDriverAssignmentForVehicle(
             DriverAssignmentForVehicleUpdateRequest request, String id) {
 
@@ -189,6 +195,7 @@ public class DriverAssignmentForVehicleService {
                 driverAssignmentForVehicleRepository.save(driverAssignmentForVehicle));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteDriverAssignmentForVehicle(String id) {
         driverAssignmentForVehicleRepository
                 .findById(id)

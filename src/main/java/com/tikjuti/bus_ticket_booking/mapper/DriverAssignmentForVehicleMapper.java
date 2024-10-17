@@ -1,6 +1,5 @@
 package com.tikjuti.bus_ticket_booking.mapper;
 
-import com.tikjuti.bus_ticket_booking.dto.response.DriverAssignmentForTripResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.DriverAssignmentForVehicleResponse;
 import com.tikjuti.bus_ticket_booking.entity.DriverAssignmentForVehicle;
 import org.mapstruct.Mapper;

@@ -2,12 +2,10 @@ package com.tikjuti.bus_ticket_booking.repository;
 
 import com.tikjuti.bus_ticket_booking.entity.Trip;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 
 
 @Repository

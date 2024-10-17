@@ -62,7 +62,8 @@ public class VehicleTypeController {
     }
 
     @PutMapping("/{vehicleTypeId}")
-    ResponseEntity<ApiResponse<VehicleTypeResponse>> updateVehicleType(@PathVariable String vehicleTypeId, @RequestBody VehicleTypeUpdateRequest request)
+    ResponseEntity<ApiResponse<VehicleTypeResponse>> updateVehicleType(@PathVariable String vehicleTypeId,
+                                                                       @RequestBody VehicleTypeUpdateRequest request)
     {
         ApiResponse<VehicleTypeResponse> apiResponse = new ApiResponse<>();
 

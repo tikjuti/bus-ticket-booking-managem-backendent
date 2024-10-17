@@ -26,7 +26,7 @@ public class Customer {
     String email;
     LocalDate dob;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
     Account account;
 }

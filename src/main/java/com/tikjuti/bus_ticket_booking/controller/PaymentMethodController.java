@@ -62,7 +62,8 @@ public class PaymentMethodController {
     }
 
     @PutMapping("/{paymentMethodId}")
-    ResponseEntity<ApiResponse<PaymentMethodResponse>> updatePaymentMethod(@PathVariable String paymentMethodId, @RequestBody PaymentMethodUpdateRequest request)
+    ResponseEntity<ApiResponse<PaymentMethodResponse>> updatePaymentMethod(@PathVariable String paymentMethodId,
+                                                                           @RequestBody PaymentMethodUpdateRequest request)
     {
         ApiResponse<PaymentMethodResponse> apiResponse = new ApiResponse<>();
 

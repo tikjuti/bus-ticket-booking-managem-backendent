@@ -59,7 +59,8 @@ public class TripController {
     }
 
     @PutMapping("/{tripId}")
-    ResponseEntity<ApiResponse<TripResponse>> updateTrip(@PathVariable String tripId, @RequestBody TripUpdateRequest request)
+    ResponseEntity<ApiResponse<TripResponse>> updateTrip(@PathVariable String tripId,
+                                                         @RequestBody TripUpdateRequest request)
     {
         ApiResponse<TripResponse> apiResponse = new ApiResponse<>();
 
@@ -71,7 +72,8 @@ public class TripController {
     }
 
     @PatchMapping("/{tripId}")
-    ResponseEntity<ApiResponse<TripResponse>> updatePatchTrip(@PathVariable String tripId, @RequestBody TripUpdateRequest request)
+    ResponseEntity<ApiResponse<TripResponse>> updatePatchTrip(@PathVariable String tripId,
+                                                              @RequestBody TripUpdateRequest request)
     {
         ApiResponse<TripResponse> apiResponse = new ApiResponse<>();
 

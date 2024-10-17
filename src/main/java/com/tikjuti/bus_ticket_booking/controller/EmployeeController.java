@@ -58,7 +58,8 @@ public class EmployeeController {
     }
 
     @PutMapping("/{employeeId}")
-    ResponseEntity<ApiResponse<EmployeeResponse>> updateEmployee(@PathVariable String employeeId, @RequestBody EmployeeUpdateRequest request)
+    ResponseEntity<ApiResponse<EmployeeResponse>> updateEmployee(@PathVariable String employeeId,
+                                                                 @RequestBody EmployeeUpdateRequest request)
     {
         ApiResponse<EmployeeResponse> apiResponse = new ApiResponse<>();
 
@@ -70,7 +71,8 @@ public class EmployeeController {
     }
 
     @PatchMapping("/{employeeId}")
-    ResponseEntity<ApiResponse<EmployeeResponse>> updatePatchEmployee(@PathVariable String employeeId, @RequestBody EmployeeUpdateRequest request)
+    ResponseEntity<ApiResponse<EmployeeResponse>> updatePatchEmployee(@PathVariable String employeeId,
+                                                                      @RequestBody EmployeeUpdateRequest request)
     {
         ApiResponse<EmployeeResponse> apiResponse = new ApiResponse<>();
 

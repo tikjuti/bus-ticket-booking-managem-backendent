@@ -1,7 +1,3 @@
-
-USE bus_ticket_booking;
-DELIMITER //
-
 CREATE PROCEDURE checkRoute(
     IN departureLocation NVARCHAR(255),
     IN arrivalLocation NVARCHAR(255),
@@ -36,6 +32,4 @@ route: BEGIN
     ELSE
         SET isValid = 1; -- Valid
     END IF;
-END //
-
-DELIMITER ;
+END;

@@ -72,7 +72,8 @@ public class TicketController {
     }
 
     @PutMapping("/{ticketId}")
-    ResponseEntity<ApiResponse<TicketResponse>> updateTicket(@PathVariable String ticketId, @RequestBody TicketUpdateRequest request)
+    ResponseEntity<ApiResponse<TicketResponse>> updateTicket(@PathVariable String ticketId,
+                                                             @RequestBody TicketUpdateRequest request)
     {
         ApiResponse<TicketResponse> apiResponse = new ApiResponse<>();
 
@@ -84,7 +85,8 @@ public class TicketController {
     }
 
     @PatchMapping("/{ticketId}")
-    ResponseEntity<ApiResponse<TicketResponse>> updatePatchTicket(@PathVariable String ticketId, @RequestBody TicketUpdateRequest request)
+    ResponseEntity<ApiResponse<TicketResponse>> updatePatchTicket(@PathVariable String ticketId,
+                                                                  @RequestBody TicketUpdateRequest request)
     {
         ApiResponse<TicketResponse> apiResponse = new ApiResponse<>();
 

@@ -17,7 +17,8 @@ public class SeatController {
     private SeatService seatService;
 
     @PutMapping("/{seatId}")
-    ResponseEntity<ApiResponse<SeatResponse>> updateSeat(@PathVariable String seatId, @RequestBody SeatUpdateRequest request)
+    ResponseEntity<ApiResponse<SeatResponse>> updateSeat(@PathVariable String seatId,
+                                                         @RequestBody SeatUpdateRequest request)
     {
         ApiResponse<SeatResponse> apiResponse = new ApiResponse<>();
 
@@ -29,7 +30,8 @@ public class SeatController {
     }
 
     @PatchMapping("/{seatId}")
-    ResponseEntity<ApiResponse<SeatResponse>> updatePatchSeat(@PathVariable String seatId, @RequestBody SeatUpdateRequest request)
+    ResponseEntity<ApiResponse<SeatResponse>> updatePatchSeat(@PathVariable String seatId,
+                                                              @RequestBody SeatUpdateRequest request)
     {
         ApiResponse<SeatResponse> apiResponse = new ApiResponse<>();
 

@@ -59,7 +59,8 @@ public class CustomerController {
     }
 
     @PutMapping("/{customerId}")
-    ResponseEntity<ApiResponse<CustomerResponse>> updateRoute(@PathVariable String customerId, @RequestBody CustomerUpdateRequest request)
+    ResponseEntity<ApiResponse<CustomerResponse>> updateRoute(@PathVariable String customerId,
+                                                              @RequestBody CustomerUpdateRequest request)
     {
         ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>();
 
@@ -71,7 +72,8 @@ public class CustomerController {
     }
 
     @PatchMapping("/{customerId}")
-    ResponseEntity<ApiResponse<CustomerResponse>> updatePatchCustomer(@PathVariable String customerId, @RequestBody CustomerUpdateRequest request)
+    ResponseEntity<ApiResponse<CustomerResponse>> updatePatchCustomer(@PathVariable String customerId,
+                                                                      @RequestBody CustomerUpdateRequest request)
     {
         ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>();
 

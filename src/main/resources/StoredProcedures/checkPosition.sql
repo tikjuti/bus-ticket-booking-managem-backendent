@@ -1,7 +1,3 @@
-
-USE bus_ticket_booking;
-DELIMITER //
-
 CREATE PROCEDURE checkPosition(
     IN p_vehicle_id VARCHAR(255),      -- ID của xe
     IN p_seat_id VARCHAR(255),         -- ID của ghế đang sửa
@@ -23,6 +19,4 @@ position: BEGIN
     ELSE
         SET p_is_exists = 0;
     END IF;
-END //
-
-DELIMITER ;
+END;

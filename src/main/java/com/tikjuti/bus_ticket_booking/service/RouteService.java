@@ -9,6 +9,7 @@ import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.repository.RouteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class RouteService {
     @Autowired
     private RouteMapper routeMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Route createRoute(RouteCreationRequest request)
     {
         Boolean exitsRoute = routeRepository.checkRoute(
@@ -40,8 +42,10 @@ public class RouteService {
                 .save(route);
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public List<Route> getRoutes() {return routeRepository.findAll();}
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public RouteResponse getRoute(String routeId)
     {
         return routeMapper
@@ -49,6 +53,7 @@ public class RouteService {
                         .orElseThrow(() -> new RuntimeException("Route not found")));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public RouteResponse updateRoute(RouteUpdateRequest request, String routeId)
     {
         Route route = routeRepository
@@ -72,6 +77,7 @@ public class RouteService {
                 .toRouteResponse(routeRepository.save(route));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public RouteResponse patchUpdateRoute(RouteUpdateRequest request, String routeId) {
         Route route = routeRepository
                 .findById(routeId)
@@ -119,7 +125,7 @@ public class RouteService {
         return routeMapper.toRouteResponse(updatedRoute);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteRoute(String routeId) {
         routeRepository.findById(routeId)
                 .map(route -> {

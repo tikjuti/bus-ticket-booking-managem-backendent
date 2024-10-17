@@ -1,6 +1,3 @@
-USE bus_ticket_booking;
-DELIMITER //
-
 CREATE PROCEDURE CheckVehicleAssignmentExists(
     IN departureDate DATE,
     IN departureTime TIME,
@@ -35,6 +32,4 @@ BEGIN
         SET isValid = 0; -- Valid
     END IF;
 
-END //
-
-DELIMITER ;
+END;

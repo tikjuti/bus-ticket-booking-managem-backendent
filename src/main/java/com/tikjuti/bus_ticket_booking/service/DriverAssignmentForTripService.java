@@ -11,6 +11,7 @@ import com.tikjuti.bus_ticket_booking.repository.DriverAssignmentForTripReposito
 import com.tikjuti.bus_ticket_booking.repository.EmployeeRepository;
 import com.tikjuti.bus_ticket_booking.repository.TripRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class DriverAssignmentForTripService {
     @Autowired
     private DriverAssignmentForTripMapper driverAssignmentForTripMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public DriverAssignmentForTrip createDriverAssignmentForTrip(
             DriverAssignmentForTripCreationRequest request)
     {
@@ -77,11 +79,13 @@ public class DriverAssignmentForTripService {
         return driverAssignmentForTripRepository.save(driverAssignmentForTrip);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<DriverAssignmentForTrip> getDriverAssignmentForTrips()
     {
         return  driverAssignmentForTripRepository.findAll();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public DriverAssignmentForTripResponse getDriverAssignmentForTrip(String driverAssignmentForTripId)
     {
         return driverAssignmentForTripMapper
@@ -90,6 +94,7 @@ public class DriverAssignmentForTripService {
                 .orElseThrow(() -> new RuntimeException("Driver assignment for trip not found")));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public DriverAssignmentForTripResponse updateDriverAssignmentForTrip(
             DriverAssignmentForTripUpdateRequest request, String id)
     {
@@ -143,6 +148,7 @@ public class DriverAssignmentForTripService {
                 );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public DriverAssignmentForTripResponse patchUpdateDriverAssignmentForTrip(
             DriverAssignmentForTripUpdateRequest request, String id) {
 
@@ -201,6 +207,7 @@ public class DriverAssignmentForTripService {
                 driverAssignmentForTripRepository.save(driverAssignmentForTrip));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteDriverAssignmentForTrip(String id) {
         driverAssignmentForTripRepository.findById(id)
                 .map(driverAssignmentForTrip -> {

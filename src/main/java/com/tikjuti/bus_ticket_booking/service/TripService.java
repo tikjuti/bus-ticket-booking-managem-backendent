@@ -1,11 +1,8 @@
 package com.tikjuti.bus_ticket_booking.service;
 
-import com.tikjuti.bus_ticket_booking.dto.request.Ticket.BuyTicketRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripUpdateRequest;
-import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.TripResponse;
-import com.tikjuti.bus_ticket_booking.dto.response.BuyTicketResponse;
 import com.tikjuti.bus_ticket_booking.entity.*;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
@@ -13,16 +10,13 @@ import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.mapper.TripMapper;
 import com.tikjuti.bus_ticket_booking.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -47,6 +41,7 @@ public class TripService {
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Trip createTrip (TripCreationRequest request)
     {
 
@@ -102,8 +97,10 @@ public class TripService {
         return tripRepository.save(trip);
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public List<Trip> getTrips() {return tripRepository.findAll();}
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public TripResponse getTrip(String tripId)
     {
         return tripMapper.toTripResponse(tripRepository
@@ -111,6 +108,7 @@ public class TripService {
                 .orElseThrow(() -> new RuntimeException("Trip not found")));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public TripResponse updateTrip(TripUpdateRequest request, String tripId)
     {
         Trip trip = tripRepository
@@ -166,6 +164,7 @@ public class TripService {
         return tripMapper.toTripResponse(tripRepository.save(trip));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public TripResponse patchUpdateTrip(TripUpdateRequest request, String tripId) {
         Trip trip = tripRepository
                 .findById(tripId)
@@ -237,6 +236,7 @@ public class TripService {
         return tripMapper.toTripResponse(tripRepository.save(trip));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteTrip(String tripId) {
         tripRepository.findById(tripId)
                 .map(trip -> {
