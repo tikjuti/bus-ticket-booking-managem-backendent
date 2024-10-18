@@ -31,7 +31,9 @@ public class SecurityConfig {
             "/api/password/verifyEmail/{email}",
             "/api/password/verifyOtp/{otp}/{email}",
             "/api/password/changePassword/{email}",
-            "/api/momoPayment/create"
+            "/api/momoPayment/create",
+            "/api/zaloPayment/create",
+            "/api/zaloPayment/callback",
     };
 
     private final String[] PUBLIC_ENDPOINTS_GET = {

@@ -9,26 +9,20 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MoMoPaymentResponse {
-    String partnerCode;
-    String requestId;
-    String orderId;
-    Long amount;
-    Long responseTime;
-    String message;
-    Integer resultCode;
-    String qrCodeUrl;
-    String payUrl;
-
-    public MoMoPaymentResponse() {
-        this.responseTime = Instant.now().toEpochMilli();
-    }
-
+public class ZaloPayPaymentResponse {
+    int return_code;
+    String return_message;
+    int sub_return_code;
+    String sub_return_message;
+    String zp_trans_token;
+    String order_url;
+    String order_token;
+    String qr_code;
 }

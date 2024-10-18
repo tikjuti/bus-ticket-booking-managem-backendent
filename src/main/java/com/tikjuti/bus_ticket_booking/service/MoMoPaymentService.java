@@ -2,9 +2,9 @@ package com.tikjuti.bus_ticket_booking.service;
 
 import com.tikjuti.bus_ticket_booking.dto.request.MoMo.MoMoPaymentRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.MoMoPaymentResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.utils.Hex;
 import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +21,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 
+@Slf4j
 @Service
 public class MoMoPaymentService {
     @Value("${momo.partnerCode}")
@@ -58,6 +59,7 @@ public class MoMoPaymentService {
                 // Kiểm tra mã trạng thái HTTP
                 if (statusCode == 200) {
                     String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
+                    log.warn("Response from MoMo API: {}", responseString);
 
                     // Chuyển đổi JSON phản hồi từ MoMo thành đối tượng MoMoPaymentResponse
                     MoMoPaymentResponse momoResponse = objectMapper.readValue(responseString, MoMoPaymentResponse.class);
