@@ -2,7 +2,9 @@ package com.tikjuti.bus_ticket_booking.controller;
 
 import com.tikjuti.bus_ticket_booking.dto.request.ZaloPay.CallbackRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.ZaloPay.ZaloPayPaymentRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.ZaloPay.ZaloPayQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ZaloPayPaymentResponse;
+import com.tikjuti.bus_ticket_booking.dto.response.ZaloPayQueryResponse;
 import com.tikjuti.bus_ticket_booking.service.ZaloPayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,5 +28,10 @@ public class ZaloPayPaymentController {
     @PostMapping("/callback")
     public String callBack(@RequestBody CallbackRequest request) throws Exception {
         return zaloPayService.callBack(request);
+    }
+
+    @PostMapping("/query")
+    public ZaloPayQueryResponse query(@RequestBody ZaloPayQueryRequest request) throws Exception {
+        return zaloPayService.query(request);
     }
 }

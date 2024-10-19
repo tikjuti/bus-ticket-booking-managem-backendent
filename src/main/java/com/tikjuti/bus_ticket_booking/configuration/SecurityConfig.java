@@ -34,6 +34,7 @@ public class SecurityConfig {
             "/api/momoPayment/create",
             "/api/zaloPayment/create",
             "/api/zaloPayment/callback",
+            "/api/zaloPayment/query"
     };
 
     private final String[] PUBLIC_ENDPOINTS_GET = {

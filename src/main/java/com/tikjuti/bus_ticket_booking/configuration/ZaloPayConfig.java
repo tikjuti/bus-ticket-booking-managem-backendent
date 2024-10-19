@@ -30,4 +30,7 @@ public class ZaloPayConfig {
 
     @Value("${zalopay.redirect_base_url}")
     String redirectBaseUrl;
+
+    @Value("${zalopay.endpoint_query}")
+    String endpointQuery;
 }
