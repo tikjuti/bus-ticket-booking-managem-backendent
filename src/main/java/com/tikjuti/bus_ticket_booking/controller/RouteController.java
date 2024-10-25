@@ -1,6 +1,8 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
@@ -32,11 +34,10 @@ public class RouteController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Route>>> getRoutes()
-    {
-        List<Route> routeList = routeService.getRoutes();
+    ResponseEntity<ApiResponse<PaginatedResult<Route>>> getRoutes(RouteQueryRequest queryRequest) {
+        PaginatedResult<Route> routeList = routeService.getRoutes(queryRequest);
 
-        ApiResponse<List<Route>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<Route>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Routes retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());

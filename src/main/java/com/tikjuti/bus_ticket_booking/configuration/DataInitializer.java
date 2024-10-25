@@ -1,6 +1,7 @@
 package com.tikjuti.bus_ticket_booking.configuration;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -10,16 +11,16 @@ import org.springframework.core.io.Resource;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
     @Autowired
     private ResourcePatternResolver resourcePatternResolver;
 

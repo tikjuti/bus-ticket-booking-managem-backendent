@@ -1,8 +1,12 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
+import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForVehicle.DAFVQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForVehicle.DriverAssignmentForVehicleCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForVehicle.DriverAssignmentForVehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.DriverAssignmentForVehicleResponse;
+import com.tikjuti.bus_ticket_booking.entity.Customer;
 import com.tikjuti.bus_ticket_booking.entity.DriverAssignmentForVehicle;
 import com.tikjuti.bus_ticket_booking.entity.Employee;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
@@ -13,12 +17,15 @@ import com.tikjuti.bus_ticket_booking.repository.DriverAssignmentForVehicleRepos
 import com.tikjuti.bus_ticket_booking.repository.EmployeeRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DriverAssignmentForVehicleService {
@@ -73,9 +80,29 @@ public class DriverAssignmentForVehicleService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<DriverAssignmentForVehicle> getDriverAssignmentForVehicles()
+    public PaginatedResult<DriverAssignmentForVehicle> getDriverAssignmentForVehicles(DAFVQueryRequest queryRequest)
     {
-        return  driverAssignmentForVehicleRepository.findAll();
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null) {
+            filterParams.put("id", queryRequest.getId());
+        }
+
+        if (queryRequest.getStartDate() != null) {
+            filterParams.put("startDate", queryRequest.getStartDate());
+        }
+
+        if (queryRequest.getEndDate() != null) {
+            filterParams.put("endDate", queryRequest.getEndDate());
+        }
+
+        Specification<DriverAssignmentForVehicle> spec = Specification.where(
+                QueryableExtensions.<DriverAssignmentForVehicle>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(
+                driverAssignmentForVehicleRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
     }
 
     @PreAuthorize("hasRole('ADMIN')")

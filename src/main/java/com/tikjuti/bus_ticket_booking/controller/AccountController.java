@@ -1,7 +1,9 @@
 
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.AccountResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
@@ -33,11 +35,11 @@ public class AccountController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Account>>> getAccounts()
+    ResponseEntity<ApiResponse<PaginatedResult<Account>>> getAccounts(AccountQueryRequest queryRequest)
     {
-        List<Account> accountList = accountService.getAccounts();
+        PaginatedResult<Account> accountList = accountService.getAccounts(queryRequest);
 
-        ApiResponse<List<Account>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<Account>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Accounts retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());

@@ -1,7 +1,10 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
 import com.tikjuti.bus_ticket_booking.dto.request.Ticket.BuyTicketRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.BuyTicketResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
@@ -13,6 +16,7 @@ import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.mapper.TicketMapper;
 import com.tikjuti.bus_ticket_booking.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +27,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TicketService {
@@ -181,9 +187,35 @@ public class TicketService {
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
-    public List<Ticket> getTickets()
+    public PaginatedResult<Ticket> getTickets(TicketQueryRequest queryRequest)
     {
-        return  ticketRepository.findAll();
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null)
+            filterParams.put("id", queryRequest.getId());
+
+        if (queryRequest.getActualTicketPrice() != null)
+            filterParams.put("actualTicketPrice", queryRequest.getActualTicketPrice());
+
+        if (queryRequest.getTicketStatus() != null)
+            filterParams.put("ticketStatus", queryRequest.getTicketStatus());
+
+        if (queryRequest.getBookingTime() != null)
+            filterParams.put("bookingTime", queryRequest.getBookingTime());
+
+        if (queryRequest.getStatusPayment() != null)
+            filterParams.put("statusPayment", queryRequest.getStatusPayment());
+
+        if (queryRequest.getPaymentDate() != null)
+            filterParams.put("paymentDate", queryRequest.getPaymentDate());
+
+        Specification<Ticket> spec = Specification.where(
+                        QueryableExtensions.<Ticket>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(
+                ticketRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
     }
 
     public TicketResponse getTicket(String ticketId) {

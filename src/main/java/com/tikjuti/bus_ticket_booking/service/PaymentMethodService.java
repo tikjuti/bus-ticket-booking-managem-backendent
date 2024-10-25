@@ -1,18 +1,25 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
 import com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod.PaymentMethodCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod.PaymentMethodQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod.PaymentMethodUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.PaymentMethodResponse;
+import com.tikjuti.bus_ticket_booking.entity.EmployeeType;
 import com.tikjuti.bus_ticket_booking.entity.PaymentMethod;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.PaymentMethodMapper;
 import com.tikjuti.bus_ticket_booking.repository.PaymentMethodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PaymentMethodService {
@@ -34,7 +41,22 @@ public class PaymentMethodService {
                 .save(paymentMethod);
     }
 
-    public List<PaymentMethod> getPaymentMethods() {return  paymentMethodRepository.findAll();}
+    public PaginatedResult<PaymentMethod> getPaymentMethods(PaymentMethodQueryRequest queryRequest) {
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null)
+            filterParams.put("id", queryRequest.getId());
+        if (queryRequest.getMethodName() != null)
+            filterParams.put("methodName", queryRequest.getMethodName());
+
+        Specification<PaymentMethod> spec = Specification.where(
+                        QueryableExtensions.<PaymentMethod>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(
+                paymentMethodRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
+    }
 
     public PaymentMethodResponse getPaymentMethod(String paymentMethodId)
     {

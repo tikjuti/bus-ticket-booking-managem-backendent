@@ -41,6 +41,11 @@ public enum ErrorCode {
 	DISTANCE_INVALID(404, "Distance must be greater than 0", HttpStatus.BAD_REQUEST),
 	USERNAME_INVALID(404, "Username must be at least 3 characters", HttpStatus.BAD_REQUEST),
 	PASSWORD_INVALID(404, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
+	PAGE_INVALID(404, "Page must be greater than 0", HttpStatus.BAD_REQUEST),
+	PAGE_SIZE_MIN_INVALID(404, "PageSize must be between 1 and 100", HttpStatus.BAD_REQUEST),
+	PAGE_SIZE_MAX_INVALID(404, "PageSize must be between 1 and 100", HttpStatus.BAD_REQUEST),
+	FORMAT_SORT_INVALID(404, "Invalid sort format", HttpStatus.BAD_REQUEST),
+	FORMAT_FILTER_INVALID(404, "Invalid filter format", HttpStatus.BAD_REQUEST),
 	;
 
 	int code;

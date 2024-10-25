@@ -1,10 +1,14 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.SeatResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
 import com.tikjuti.bus_ticket_booking.entity.Seat;
+import com.tikjuti.bus_ticket_booking.entity.Trip;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
 import com.tikjuti.bus_ticket_booking.entity.VehicleType;
 import com.tikjuti.bus_ticket_booking.enums.SeatStatus;
@@ -16,12 +20,11 @@ import com.tikjuti.bus_ticket_booking.repository.SeatRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class VehicleService {
@@ -76,7 +79,35 @@ public class VehicleService {
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
-    public List<Vehicle> getVehicles() {return vehicleRepository.findAll();}
+    public PaginatedResult<Vehicle> getVehicles(VehicleQueryRequest queryRequest) {
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null)
+            filterParams.put("id", queryRequest.getId());
+
+        if (queryRequest.getSeatCount() != null)
+            filterParams.put("seatCount", queryRequest.getSeatCount());
+
+        if (queryRequest.getLicensePlate() != null)
+            filterParams.put("licensePlate", queryRequest.getLicensePlate());
+
+        if (queryRequest.getVehicleName() != null)
+            filterParams.put("vehicleName", queryRequest.getVehicleName());
+
+        if (queryRequest.getColor() != null)
+            filterParams.put("color", queryRequest.getColor());
+
+        if (queryRequest.getStatus() != null)
+            filterParams.put("status", queryRequest.getStatus());
+
+        Specification<Vehicle> spec = Specification.where(
+                        QueryableExtensions.<Vehicle>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(
+                vehicleRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
+    }
 
     public VehicleResponse getVehicle(String vehicleId)
     {

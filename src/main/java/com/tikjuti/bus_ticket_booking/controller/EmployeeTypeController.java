@@ -1,6 +1,8 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.EmployeeType.EmployeeTypeCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.EmployeeType.EmployeeTypeQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.EmployeeType.EmployeeTypeUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.EmployeeTypeResponse;
@@ -33,11 +35,11 @@ public class EmployeeTypeController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<EmployeeType>>> getEmployeeTypes()
+    ResponseEntity<ApiResponse<PaginatedResult<EmployeeType>>> getEmployeeTypes(EmployeeTypeQueryRequest queryRequest)
     {
-        List<EmployeeType> employeeTypeList = employeeTypeService.getEmployeeTypes();
+        PaginatedResult<EmployeeType> employeeTypeList = employeeTypeService.getEmployeeTypes(queryRequest);
 
-        ApiResponse<List<EmployeeType>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<EmployeeType>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Employee types retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());
@@ -46,7 +48,6 @@ public class EmployeeTypeController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     }
-
 
     @GetMapping("/{employeeTypeId}")
     ResponseEntity<ApiResponse<EmployeeTypeResponse>> getEmployeeType(@PathVariable String employeeTypeId) {

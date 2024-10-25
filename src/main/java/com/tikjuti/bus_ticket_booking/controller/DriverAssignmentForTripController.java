@@ -1,8 +1,10 @@
 
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DAFTQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
@@ -40,12 +42,13 @@ public class DriverAssignmentForTripController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<DriverAssignmentForTrip>>> getDriverAssignmentsForTrips()
+    ResponseEntity<ApiResponse<PaginatedResult<DriverAssignmentForTrip>>> getDriverAssignmentsForTrips(
+            DAFTQueryRequest queryRequest)
     {
-        List<DriverAssignmentForTrip> driverAssignmentForTripList =
-                driverAssignmentForTripService.getDriverAssignmentForTrips();
+        PaginatedResult<DriverAssignmentForTrip> driverAssignmentForTripList =
+                driverAssignmentForTripService.getDriverAssignmentForTrips(queryRequest);
 
-        ApiResponse<List<DriverAssignmentForTrip>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<DriverAssignmentForTrip>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Driver assignment for trip retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());

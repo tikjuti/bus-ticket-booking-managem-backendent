@@ -1,6 +1,8 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.VehicleType.VehicleTypeCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.VehicleType.VehicleTypeQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.VehicleType.VehicleTypeUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleTypeResponse;
@@ -33,11 +35,11 @@ public class VehicleTypeController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<VehicleType>>> getVehicleTypes()
+    ResponseEntity<ApiResponse<PaginatedResult<VehicleType>>> getVehicleTypes(VehicleTypeQueryRequest queryRequest)
     {
-        List<VehicleType> vehicleTypeList = vehicleTypeService.getVehicleTypes();
+        PaginatedResult<VehicleType> vehicleTypeList = vehicleTypeService.getVehicleTypes(queryRequest);
 
-        ApiResponse<List<VehicleType>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<VehicleType>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Vehicle types retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());
@@ -46,7 +48,6 @@ public class VehicleTypeController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     }
-
 
     @GetMapping("/{vehicleTypeId}")
     ResponseEntity<ApiResponse<VehicleTypeResponse>> getVehicleType(@PathVariable String vehicleTypeId) {

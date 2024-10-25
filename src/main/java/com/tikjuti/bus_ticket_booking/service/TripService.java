@@ -1,6 +1,9 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.TripResponse;
 import com.tikjuti.bus_ticket_booking.entity.*;
@@ -10,6 +13,7 @@ import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.mapper.TripMapper;
 import com.tikjuti.bus_ticket_booking.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +21,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 
 @Service
@@ -98,7 +103,32 @@ public class TripService {
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
-    public List<Trip> getTrips() {return tripRepository.findAll();}
+    public PaginatedResult<Trip> getTrips(TripQueryRequest queryRequest) {
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null)
+            filterParams.put("id", queryRequest.getId());
+
+        if (queryRequest.getDepartureDate() != null)
+            filterParams.put("departureDate", queryRequest.getDepartureDate());
+
+        if (queryRequest.getDepartureTime() != null)
+            filterParams.put("departureTime", queryRequest.getDepartureTime());
+
+        if (queryRequest.getArrivalDate() != null)
+            filterParams.put("arrivalDate", queryRequest.getArrivalDate());
+
+        if (queryRequest.getArrivalTime() != null)
+            filterParams.put("arrivalTime", queryRequest.getArrivalTime());
+
+        Specification<Trip> spec = Specification.where(
+                        QueryableExtensions.<Trip>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(
+                tripRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
+    }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public TripResponse getTrip(String tripId)

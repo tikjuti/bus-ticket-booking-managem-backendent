@@ -1,6 +1,9 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
 import com.tikjuti.bus_ticket_booking.dto.request.Employee.EmployeeCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Employee.EmployeeQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Employee.EmployeeUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.EmployeeResponse;
 import com.tikjuti.bus_ticket_booking.entity.Account;
@@ -12,15 +15,19 @@ import com.tikjuti.bus_ticket_booking.mapper.EmployeeMapper;
 import com.tikjuti.bus_ticket_booking.repository.AccountRepository;
 import com.tikjuti.bus_ticket_booking.repository.EmployeeRepository;
 import com.tikjuti.bus_ticket_booking.repository.EmployeeTypeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
+@Slf4j
 @Service
 public class EmployeeService {
     @Autowired
@@ -71,7 +78,32 @@ public class EmployeeService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Employee> getEmployees() {return  employeeRepository.findAll();}
+    public PaginatedResult<Employee> getEmployees(EmployeeQueryRequest queryRequest)
+    {
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null) {
+            filterParams.put("id", queryRequest.getId());
+        }
+        if (queryRequest.getEmployeeName() != null) {
+            filterParams.put("employeeName", queryRequest.getEmployeeName());
+        }
+        if (queryRequest.getPhone() != null) {
+            filterParams.put("phone", queryRequest.getPhone());
+        }
+        if (queryRequest.getEmail() != null) {
+            filterParams.put("email", queryRequest.getEmail());
+        }
+        if (queryRequest.getNationalIDNumber() != null) {
+            filterParams.put("nationalIDNumber", queryRequest.getNationalIDNumber());
+        }
+
+        Specification<Employee> spec = Specification.where(QueryableExtensions.<Employee>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(employeeRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
+    }
 
     @PostAuthorize("returnObject.account.username == authentication.name || hasRole('ADMIN')")
     public EmployeeResponse getEmployee(String employeeId)

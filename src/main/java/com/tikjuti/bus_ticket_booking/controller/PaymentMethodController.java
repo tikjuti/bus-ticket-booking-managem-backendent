@@ -1,6 +1,8 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod.PaymentMethodCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod.PaymentMethodQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod.PaymentMethodUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.PaymentMethodResponse;
@@ -33,11 +35,12 @@ public class PaymentMethodController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<PaymentMethod>>> getPaymentMethods()
+    ResponseEntity<ApiResponse<PaginatedResult<PaymentMethod>>> getPaymentMethods(
+            PaymentMethodQueryRequest queryRequest)
     {
-        List<PaymentMethod> paymentMethodList = paymentMethodService.getPaymentMethods();
+        PaginatedResult<PaymentMethod> paymentMethodList = paymentMethodService.getPaymentMethods(queryRequest);
 
-        ApiResponse<List<PaymentMethod>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<PaymentMethod>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Payment methods retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());

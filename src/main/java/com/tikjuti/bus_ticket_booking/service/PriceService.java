@@ -1,8 +1,12 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
 import com.tikjuti.bus_ticket_booking.dto.request.Price.PriceCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Price.PriceQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Price.PriceUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.PriceResponse;
+import com.tikjuti.bus_ticket_booking.entity.PaymentMethod;
 import com.tikjuti.bus_ticket_booking.entity.Price;
 import com.tikjuti.bus_ticket_booking.entity.Route;
 import com.tikjuti.bus_ticket_booking.entity.VehicleType;
@@ -15,10 +19,13 @@ import com.tikjuti.bus_ticket_booking.repository.PriceRepository;
 import com.tikjuti.bus_ticket_booking.repository.RouteRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PriceService {
@@ -67,7 +74,22 @@ public class PriceService {
                 .save(price);
     }
 
-    public List<Price> getPrices() {return priceRepository.findAll();}
+    public PaginatedResult<Price> getPrices(PriceQueryRequest queryRequest) {
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null)
+            filterParams.put("id", queryRequest.getId());
+        if (queryRequest.getTicketPrice() != null)
+            filterParams.put("ticketPrice", queryRequest.getTicketPrice());
+
+        Specification<Price> spec = Specification.where(
+                        QueryableExtensions.<Price>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(
+                priceRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
+    }
 
     public PriceResponse getPrice(String priceId)
     {

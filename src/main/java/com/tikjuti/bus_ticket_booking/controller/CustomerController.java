@@ -1,7 +1,9 @@
 
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.CustomerResponse;
@@ -33,11 +35,11 @@ public class CustomerController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Customer>>> getCustomers()
+    ResponseEntity<ApiResponse<PaginatedResult<Customer>>> getCustomers(CustomerQueryRequest queryRequest)
     {
-        List<Customer> customersList = customerService.getCustomers();
+        PaginatedResult<Customer> customersList = customerService.getCustomers(queryRequest);
 
-        ApiResponse<List<Customer>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<Customer>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Customers retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());

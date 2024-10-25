@@ -1,7 +1,10 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
 import com.tikjuti.bus_ticket_booking.dto.request.Account.AccountCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Customer.CustomerUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.CustomerResponse;
 import com.tikjuti.bus_ticket_booking.entity.*;
@@ -12,14 +15,17 @@ import com.tikjuti.bus_ticket_booking.mapper.CustomerMapper;
 import com.tikjuti.bus_ticket_booking.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -70,8 +76,31 @@ public class CustomerService {
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
-    public List<Customer> getCustomers() {
-        return  customerRepository.findAll();
+    public PaginatedResult<Customer> getCustomers(CustomerQueryRequest queryRequest) {
+
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null) {
+            filterParams.put("id", queryRequest.getId());
+        }
+
+        if (queryRequest.getCustomerName() != null) {
+            filterParams.put("customerName", queryRequest.getCustomerName());
+        }
+
+        if (queryRequest.getPhone() != null) {
+            filterParams.put("phone", queryRequest.getPhone());
+        }
+
+        if (queryRequest.getEmail() != null) {
+            filterParams.put("email", queryRequest.getEmail());
+        }
+
+        Specification<Customer> spec = Specification.where(QueryableExtensions.<Customer>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(customerRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
     }
 
     @PostAuthorize("returnObject.account.username == authentication.name || hasRole('ADMIN') || hasRole('EMPLOYEE')")

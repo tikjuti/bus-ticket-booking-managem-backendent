@@ -1,13 +1,17 @@
 
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.Employee.EmployeeCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Employee.EmployeeQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Employee.EmployeeUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.EmployeeResponse;
 import com.tikjuti.bus_ticket_booking.entity.Employee;
 import com.tikjuti.bus_ticket_booking.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,11 +36,11 @@ public class EmployeeController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Employee>>> getEmployees()
+    ResponseEntity<ApiResponse<PaginatedResult<Employee>>> getEmployees(@Valid EmployeeQueryRequest employeeQueryRequest)
     {
-        List<Employee> employeeList = employeeService.getEmployees();
+        PaginatedResult<Employee> employeeList = employeeService.getEmployees(employeeQueryRequest);
 
-        ApiResponse<List<Employee>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<Employee>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Employees retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());

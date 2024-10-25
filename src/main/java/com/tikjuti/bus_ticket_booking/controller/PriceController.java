@@ -1,6 +1,8 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.Price.PriceCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Price.PriceQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Price.PriceUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteUpdateRequest;
@@ -37,11 +39,10 @@ public class PriceController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Price>>> getPrices()
-    {
-        List<Price> priceList = priceService.getPrices();
+    ResponseEntity<ApiResponse<PaginatedResult<Price>>> getPrices(PriceQueryRequest queryRequest) {
+        PaginatedResult<Price> priceList = priceService.getPrices(queryRequest);
 
-        ApiResponse<List<Price>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<Price>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Prices retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());

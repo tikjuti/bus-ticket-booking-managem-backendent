@@ -1,6 +1,8 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Trip.TripUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.TripResponse;
@@ -33,11 +35,10 @@ public class TripController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Trip>>> getTrips()
-    {
-        List<Trip> tripList = tripService.getTrips();
+    ResponseEntity<ApiResponse<PaginatedResult<Trip>>> getTrips(TripQueryRequest queryRequest) {
+        PaginatedResult<Trip> tripList = tripService.getTrips(queryRequest);
 
-        ApiResponse<List<Trip>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<Trip>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Trips retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());

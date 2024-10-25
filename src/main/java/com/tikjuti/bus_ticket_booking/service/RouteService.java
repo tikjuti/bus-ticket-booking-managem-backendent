@@ -1,18 +1,25 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
+import com.tikjuti.bus_ticket_booking.entity.Price;
 import com.tikjuti.bus_ticket_booking.entity.Route;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.repository.RouteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RouteService {
@@ -43,7 +50,38 @@ public class RouteService {
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
-    public List<Route> getRoutes() {return routeRepository.findAll();}
+    public PaginatedResult<Route> getRoutes(RouteQueryRequest queryRequest) {
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null)
+            filterParams.put("id", queryRequest.getId());
+
+        if (queryRequest.getDepartureLocation() != null)
+            filterParams.put("departureLocation", queryRequest.getDepartureLocation());
+
+        if (queryRequest.getArrivalLocation() != null)
+            filterParams.put("arrivalLocation", queryRequest.getArrivalLocation());
+
+        if (queryRequest.getDeparturePoint() != null)
+            filterParams.put("departurePoint", queryRequest.getDeparturePoint());
+
+        if (queryRequest.getArrivalPoint() != null)
+            filterParams.put("arrivalPoint", queryRequest.getArrivalPoint());
+
+        if (queryRequest.getDistance() != null)
+            filterParams.put("distance", queryRequest.getDistance());
+
+        if (queryRequest.getDuration() != null)
+            filterParams.put("duration", queryRequest.getDuration());
+
+        Specification<Route> spec = Specification.where(
+                        QueryableExtensions.<Route>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(
+                routeRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
+    }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public RouteResponse getRoute(String routeId)

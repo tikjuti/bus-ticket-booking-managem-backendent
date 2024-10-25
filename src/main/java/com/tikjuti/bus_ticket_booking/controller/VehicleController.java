@@ -1,6 +1,8 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleCreationRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
@@ -32,11 +34,10 @@ public class VehicleController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Vehicle>>> getVehicles()
-    {
-        List<Vehicle> vehicleList = vehicleService.getVehicles();
+    ResponseEntity<ApiResponse<PaginatedResult<Vehicle>>> getVehicles(VehicleQueryRequest queryRequest) {
+        PaginatedResult<Vehicle> vehicleList = vehicleService.getVehicles(queryRequest);
 
-        ApiResponse<List<Vehicle>> apiResponse = new ApiResponse<>();
+        ApiResponse<PaginatedResult<Vehicle>> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage("Vehicles retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());

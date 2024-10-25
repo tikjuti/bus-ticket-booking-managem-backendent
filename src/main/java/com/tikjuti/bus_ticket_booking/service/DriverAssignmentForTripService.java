@@ -1,5 +1,8 @@
 package com.tikjuti.bus_ticket_booking.service;
 
+import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
+import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
+import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DAFTQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.DriverAssignmentForTrip.DriverAssignmentForTripUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.DriverAssignmentForTripResponse;
@@ -11,10 +14,13 @@ import com.tikjuti.bus_ticket_booking.repository.DriverAssignmentForTripReposito
 import com.tikjuti.bus_ticket_booking.repository.EmployeeRepository;
 import com.tikjuti.bus_ticket_booking.repository.TripRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DriverAssignmentForTripService {
@@ -80,9 +86,21 @@ public class DriverAssignmentForTripService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<DriverAssignmentForTrip> getDriverAssignmentForTrips()
+    public PaginatedResult<DriverAssignmentForTrip> getDriverAssignmentForTrips(DAFTQueryRequest queryRequest)
     {
-        return  driverAssignmentForTripRepository.findAll();
+        Map<String, Object> filterParams = new HashMap<>();
+
+        if (queryRequest.getId() != null) {
+            filterParams.put("id", queryRequest.getId());
+        }
+
+        Specification<DriverAssignmentForTrip> spec = Specification.where(
+                QueryableExtensions.<DriverAssignmentForTrip>applyIncludes(queryRequest.getIncludes()))
+                .and(QueryableExtensions.applyFilters(filterParams))
+                .and(QueryableExtensions.applySorting(queryRequest.getSort()));
+
+        return QueryableExtensions.applyPagination(driverAssignmentForTripRepository,
+                spec, queryRequest.getPage(), queryRequest.getPageSize());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
