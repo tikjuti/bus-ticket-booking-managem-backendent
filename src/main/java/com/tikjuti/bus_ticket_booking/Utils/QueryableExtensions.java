@@ -48,9 +48,11 @@ public class QueryableExtensions {
                 Object value = filter.getValue();
 
                 if (value instanceof String && ((String) value).contains(":")) {
-                    String[] filterParts = ((String) value).split(":");
-                    String operatorType = filterParts[0];
-                    String filterValue = filterParts[1];
+                    String filterString = (String) value;
+                    int firstColonIndex = filterString.indexOf(":");
+
+                    String operatorType = filterString.substring(0, firstColonIndex);
+                    String filterValue = filterString.substring(firstColonIndex + 1);
 
                     Path<Object> path = root.get(key);
 
