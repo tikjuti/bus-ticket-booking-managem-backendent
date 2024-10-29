@@ -41,14 +41,23 @@ public class ZaloPayService {
         String redirectBaseUrl = zaloPayConfig.getRedirectBaseUrl();
 
         List<ZaloPayPaymentRequest> items = new ArrayList<>();
-        items.add(new ZaloPayPaymentRequest(request.getOrderId(), request.getCustomerName(), request.getPhone(), request.getAmount()));
+        items.add(new ZaloPayPaymentRequest(
+                request.getOrderId(),
+                request.getRouteName(),
+                request.getDepartureTime(),
+                request.getDepartureDate(),
+                request.getDeparturePoint(),
+                request.getCustomerName(),
+                request.getPhone(),
+                request.getEmail(),
+                request.getAmount()));
 
         Gson gson = new Gson();
         String itemsJson = gson.toJson(items);
-        final Map embed_data = new HashMap() {
+        Map<String, Object> embed_data = new HashMap() {
 
             {
-                put("redirecturl", redirectBaseUrl + "/" + request.getOrderId());
+                put("redirectUrl", redirectBaseUrl + "/" + request.getOrderId());
             }
         };
 

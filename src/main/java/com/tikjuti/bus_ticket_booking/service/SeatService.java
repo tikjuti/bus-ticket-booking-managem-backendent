@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
+
 
 @Service
 public class SeatService {
@@ -24,6 +27,13 @@ public class SeatService {
 
     @Autowired
     private SeatMapper seatMapper;
+
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
+    public Set<SeatResponse> getSeatBuyVehicleId(String vehicleId) {
+        Set<Seat> seats = seatRepository.findByVehicleId(vehicleId);
+
+        return seatMapper.toListSeatResponse(seats);
+    }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public SeatResponse updateSeat(SeatUpdateRequest request, String seatId)

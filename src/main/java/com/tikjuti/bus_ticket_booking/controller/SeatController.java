@@ -9,12 +9,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 
 @RestController
 @RequestMapping("/api/seats")
 public class SeatController {
     @Autowired
     private SeatService seatService;
+
+    @GetMapping("/{vehicleId}")
+    ResponseEntity<ApiResponse<Set<SeatResponse>>> getSeatByVehicleId(@PathVariable String vehicleId)
+    {
+        ApiResponse<Set<SeatResponse>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Get seat by vehicle id successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(seatService.getSeatBuyVehicleId(vehicleId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 
     @PutMapping("/{seatId}")
     ResponseEntity<ApiResponse<SeatResponse>> updateSeat(@PathVariable String seatId,

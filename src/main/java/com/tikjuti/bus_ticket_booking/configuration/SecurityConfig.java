@@ -34,6 +34,7 @@ public class SecurityConfig {
             "/api/password/verifyOtp/{otp}/{email}",
             "/api/password/changePassword/{email}",
             "/api/momoPayment/create",
+            "/api/momoPayment/query",
             "/api/zaloPayment/create",
             "/api/zaloPayment/callback",
             "/api/zaloPayment/query"

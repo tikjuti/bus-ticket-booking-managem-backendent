@@ -11,16 +11,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MoMoPaymentRequest {
-    String orderId ;
-    String orderInfo ;
-    String routeName;
-    String departureTime;
-    String departureDate;
-    String departurePoint;
-    String customerName;
-    String phone;
-    String email = "";
-    Long amount;
-    String extraData = "" ;
+public class MoMoQueryRequest {
+    String requestId;
+    String orderId;
 }

@@ -7,6 +7,10 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 
 @Repository
 public interface SeatRepository extends JpaRepository<Seat, String>,
@@ -17,4 +21,6 @@ public interface SeatRepository extends JpaRepository<Seat, String>,
             @Param("p_seat_id") String p_seat_id,
             @Param("p_new_position") String p_new_position
     );
+
+    Set<Seat> findByVehicleId(String vehicleId);
 }

@@ -13,7 +13,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ZaloPayPaymentRequest {
     String orderId;
+    String routeName;
+    String departureTime;
+    String departureDate;
+    String departurePoint;
     String customerName;
     String phone;
+    String email = "";
     long amount;
 }
