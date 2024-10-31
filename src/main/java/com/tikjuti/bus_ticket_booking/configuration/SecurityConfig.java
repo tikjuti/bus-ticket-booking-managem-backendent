@@ -37,7 +37,9 @@ public class SecurityConfig {
             "/api/momoPayment/query",
             "/api/zaloPayment/create",
             "/api/zaloPayment/callback",
-            "/api/zaloPayment/query"
+            "/api/zaloPayment/query",
+            "/api/vnpay/query",
+            "/api/vnpay/refund",
     };
 
     private final String[] PUBLIC_ENDPOINTS_GET = {
@@ -47,6 +49,7 @@ public class SecurityConfig {
             "/api/paymentMethods",
             "/api/paymentMethods/{id}",
             "/api/prices",
+            "/api/vnpay/create",
     };
 
     @Bean

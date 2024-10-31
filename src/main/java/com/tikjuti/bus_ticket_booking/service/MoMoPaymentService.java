@@ -1,10 +1,8 @@
 package com.tikjuti.bus_ticket_booking.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.nimbusds.jose.shaded.gson.Gson;
+
 import com.tikjuti.bus_ticket_booking.dto.request.MoMo.MoMoPaymentRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.MoMo.MoMoQueryRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.ZaloPay.ZaloPayPaymentRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.MoMoPaymentResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.MoMoQueryResponse;
 import lombok.extern.slf4j.Slf4j;
