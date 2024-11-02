@@ -26,10 +26,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class TicketService {
@@ -50,6 +47,8 @@ public class TicketService {
 
     @Autowired
     private TripRepository tripRepository;
+    @Autowired
+    private RouteRepository routeRepository;
 
     @Autowired
     private TicketMapper ticketMapper;
@@ -118,12 +117,49 @@ public class TicketService {
         return buyTicketResponses;
     }
 
+    public BuyTicketResponse buyTicketById(String tripId) {
+        Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new RuntimeException("Trip not found"));
+
+        BuyTicketResponse buyTicketResponse = new BuyTicketResponse();
+
+        buyTicketResponse.setTripId(trip.getId());
+        buyTicketResponse.setDepartureDate(trip.getDepartureDate());
+        buyTicketResponse.setDepartureTime(trip.getDepartureTime());
+        buyTicketResponse.setArrivalDate(trip.getArrivalDate());
+        buyTicketResponse.setArrivalTime(trip.getArrivalTime());
+
+        Vehicle vehicle = vehicleRepository
+                .findById((trip.getVehicle().getId()))
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        buyTicketResponse.setVehicleName(vehicle.getVehicleName());
+
+
+
+        Route route = routeRepository
+                .findById(trip.getRoute().getId()).orElseThrow(() -> new RuntimeException("Route not found"));
+
+        RouteResponse routeResponse = routeMapper.toRouteResponse(route);
+
+        buyTicketResponse.setRoute(routeResponse);
+
+        buyTicketResponse.setTicketPrice(
+                ticketRepository.findTicketPrice(
+                        trip.getVehicle().getId(),
+                        route.getId()));
+        buyTicketResponse.setAvailableSeats(
+                ticketRepository.findAvailableSeatsByVehicleId(
+                        vehicle.getId()));
+
+        return buyTicketResponse;
+    }
+
     public Ticket createTicket(TicketCreationRequest request)
     {
         Ticket ticket = new Ticket();
 
         Customer customer;
-        if (request.getEmployeeId() == null) {
+        if (request.getCustomerId() == null) {
 
             if (customerRepository.findByEmailOrPhone(request.getEmail(), request.getPhone()) != null) {
                 customer = customerRepository.findByEmailOrPhone(request.getEmail(), request.getPhone());

@@ -25,6 +25,7 @@ public class SecurityConfig {
     private CustomJwtDecoder jwtDecoder;
 
     private final String[] PUBLIC_ENDPOINTS_POST = {
+            "/api/tickets/buyTicket",
             "/api/customers",
             "/api/auth/token",
             "/api/auth/introspect",
@@ -43,13 +44,13 @@ public class SecurityConfig {
     };
 
     private final String[] PUBLIC_ENDPOINTS_GET = {
-            "/api/tickets/buyTicket",
             "/api/tickets/{id}",
             "/api/vehicles/{id}",
             "/api/paymentMethods",
             "/api/paymentMethods/{id}",
             "/api/prices",
             "/api/vnpay/create",
+            "/api/tickets/buyTicket/{tripId}",
     };
 
     @Bean

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, String>,
         JpaSpecificationExecutor<PaymentMethod> {
-    boolean existsByMethodName(String methodName);
 
+    boolean existsByMethodName(String methodName);
     boolean existsById(String id);
 }

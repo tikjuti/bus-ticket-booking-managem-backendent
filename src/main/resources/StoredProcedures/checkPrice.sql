@@ -16,7 +16,7 @@ BEGIN
     FROM bus_ticket_booking.price 
     WHERE vehicle_type_id = vehicleType
       AND route_id = route
-      AND id != priceId;
+      AND (priceId IS NULL OR id != priceId);
 
     -- Nếu số lượng lớn hơn 0, thì không hợp lệ (1)
     IF (count_prices > 0) THEN

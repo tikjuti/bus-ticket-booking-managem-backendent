@@ -24,7 +24,7 @@ public class TicketController {
     @Autowired
     private TicketService ticketService;
 
-    @GetMapping("/buyTicket")
+    @PostMapping("/buyTicket")
     ResponseEntity<ApiResponse<List<BuyTicketResponse>>> getTripUserFind(@RequestBody BuyTicketRequest request) {
 
         ApiResponse<List<BuyTicketResponse>> apiResponse = new ApiResponse<>();
@@ -32,6 +32,18 @@ public class TicketController {
         apiResponse.setMessage("Find ticket successfully");
         apiResponse.setCode(HttpStatus.OK.value());
         apiResponse.setResult(ticketService.buyTicket(request));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/buyTicket/{tripId}")
+    ResponseEntity<ApiResponse<BuyTicketResponse>> getTripUserFindById(@PathVariable String tripId) {
+
+        ApiResponse<BuyTicketResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Find trip successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(ticketService.buyTicketById(tripId));
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }

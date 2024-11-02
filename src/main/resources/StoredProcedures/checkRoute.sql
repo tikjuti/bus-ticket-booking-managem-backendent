@@ -3,8 +3,6 @@ CREATE PROCEDURE checkRoute(
     IN arrivalLocation NVARCHAR(255),
     IN departurePoint NVARCHAR(255),
     IN arrivalPoint NVARCHAR(255),
-    IN distance INT,
-    IN duration INT,
     OUT isValid BIT  -- Change this to BIT
 )
 route: BEGIN

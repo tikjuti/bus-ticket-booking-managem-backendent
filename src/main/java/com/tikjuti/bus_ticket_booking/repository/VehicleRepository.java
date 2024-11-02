@@ -12,11 +12,12 @@ import java.util.Set;
 
 
 @Repository
-public interface VehicleRepository extends JpaRepository<Vehicle, String>, JpaSpecificationExecutor<Vehicle> {
+public interface VehicleRepository extends JpaRepository<Vehicle, String>, JpaSpecificationExecutor<Vehicle>,
+        CustomVehicleRepository {
+
     boolean existsById(String id);
 
     boolean existsByLicensePlate(String licensePlate);
 
-    @Query("SELECT s FROM Seat s WHERE s.vehicle.id = :vehicleId")
-    Set<Seat> findSeatsByVehicleId(@Param("vehicleId") String vehicleId);
+    Set<Seat> findSeatsByVehicleId(String vehicleId);
 }

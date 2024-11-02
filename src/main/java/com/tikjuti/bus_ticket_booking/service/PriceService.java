@@ -53,7 +53,7 @@ public class PriceService {
         Boolean exitsPrice = priceRepository.checkPrice(
                 request.getVehicleTypeId(),
                 request.getRouteId(),
-                price.getId()
+                null
         );
         if(exitsPrice)
             throw new AppException(ErrorCode.PRICE_EXISTED);

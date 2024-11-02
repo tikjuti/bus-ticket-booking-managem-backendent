@@ -6,7 +6,6 @@ import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteCreationRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Route.RouteUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
-import com.tikjuti.bus_ticket_booking.entity.Price;
 import com.tikjuti.bus_ticket_booking.entity.Route;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
@@ -18,7 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -36,9 +34,7 @@ public class RouteService {
                 request.getDepartureLocation(),
                 request.getArrivalLocation(),
                 request.getDeparturePoint(),
-                request.getArrivalPoint(),
-                request.getDistance(),
-                request.getDuration()
+                request.getArrivalPoint()
         );
         if(!exitsRoute)
             throw new AppException(ErrorCode.ROUTE_EXISTED);
@@ -102,9 +98,7 @@ public class RouteService {
                 request.getDepartureLocation(),
                 request.getArrivalLocation(),
                 request.getDeparturePoint(),
-                request.getArrivalPoint(),
-                request.getDistance(),
-                request.getDuration()
+                request.getArrivalPoint()
         );
         if(!exitsRoute)
             throw new AppException(ErrorCode.ROUTE_EXISTED);
@@ -125,9 +119,7 @@ public class RouteService {
                 request.getDepartureLocation() != null ? request.getDepartureLocation() : route.getDepartureLocation(),
                 request.getArrivalLocation() != null ? request.getArrivalLocation() : route.getArrivalLocation(),
                 request.getDeparturePoint() != null ? request.getDeparturePoint() : route.getDeparturePoint(),
-                request.getArrivalPoint() != null ? request.getArrivalPoint() : route.getArrivalPoint(),
-                request.getDistance() != 0 ? request.getDistance() : route.getDistance(),
-                request.getDuration() != 0 ? request.getDuration() : route.getDuration()
+                request.getArrivalPoint() != null ? request.getArrivalPoint() : route.getArrivalPoint()
         );
 
         if (!existsRoute) {

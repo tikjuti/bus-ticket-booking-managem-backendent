@@ -10,9 +10,7 @@ import java.util.Optional;
 @Repository
 public interface VehicleTypeRepository extends JpaRepository<VehicleType, String>,
         JpaSpecificationExecutor<VehicleType> {
+
     boolean existsByVehicleTypeName(String nameEmployeeType);
-
     boolean existsById(String id);
-
-    Optional<VehicleType> findByVehicleTypeNameAndId(String nameEmployeeType, String id);
 }
