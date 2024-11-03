@@ -16,6 +16,6 @@ public class VehicleCreationRequest {
     String licensePlate;
     String vehicleName;
     String color;
-    VehicleStatus status;
+    VehicleStatus status = VehicleStatus.ACTIVE;
     String vehicleType;
 }

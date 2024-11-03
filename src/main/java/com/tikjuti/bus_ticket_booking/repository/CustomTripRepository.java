@@ -9,5 +9,6 @@ public interface CustomTripRepository {
     Boolean checkVehicleAssignmentExists(String departureDate, String departureTime, String arrivalDate,
             String arrivalTime, String vehicleId, String tripId
     );
-    
+
+    Boolean checkVehicleIsACTIVE(String vehicleId);
 }

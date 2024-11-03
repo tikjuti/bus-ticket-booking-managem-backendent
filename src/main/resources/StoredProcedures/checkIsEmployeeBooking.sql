@@ -11,6 +11,7 @@ BEGIN
     JOIN employee_type
     ON employee.employee_type_id = employee_type.id
     WHERE employee.id = employeeId
+      AND employee.status = "ACTIVE"
       AND employee_type.name_employee_type LIKE '%Nhân viên đặt vé%';
 
     -- Nếu số lượng lớn hơn 0, thì là nhân viên đặt vé (isValid = 1)

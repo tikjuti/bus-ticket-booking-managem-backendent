@@ -31,8 +31,8 @@ jwt:
 vnpay:
   vnp_PayUrl: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
   vnp_ReturnUrl: "http://localhost:5173/campaign"
-  vnp_TmnCode: ${VNPAY_TMNCODE}
-  secretKey: ${VNPAY_SECRETKEY}
+  vnp_TmnCode: ${VNP_TMN_CODE}
+  secretKey: ${VNP_SECRET_KEY}
   vnp_ApiUrl: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
 
 momo:

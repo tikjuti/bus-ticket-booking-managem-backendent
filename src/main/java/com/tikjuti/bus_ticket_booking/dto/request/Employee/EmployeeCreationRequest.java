@@ -20,6 +20,6 @@ public class EmployeeCreationRequest {
     String email;
     String dob;
     String nationalIDNumber;
-    EmployeeStatus status;
+    EmployeeStatus status = EmployeeStatus.ACTIVE;
     String employeeTypeId;
 }

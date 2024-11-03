@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 
 @Data
 @NoArgsConstructor
@@ -15,10 +18,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TicketCreationRequest {
     int actualTicketPrice;
-    TicketStatus ticketStatus;
-    String bookingTime;
-    PaymentStatus statusPayment;
-    String paymentDate;
+    TicketStatus ticketStatus = TicketStatus.CONFIRMED;
+    String bookingTime = LocalTime.now().toString();
+    PaymentStatus statusPayment = PaymentStatus.PAID;
+    String paymentDate = LocalDate.now().toString();
     String customerId;
     String tripId;
     String paymentMethodId;

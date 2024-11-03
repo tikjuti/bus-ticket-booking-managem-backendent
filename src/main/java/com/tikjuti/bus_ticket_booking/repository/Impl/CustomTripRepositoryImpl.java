@@ -36,4 +36,15 @@ public class CustomTripRepositoryImpl implements CustomTripRepository {
 
         return (Boolean) query.getOutputParameterValue("isValid");
     }
+
+    @Override
+    public Boolean checkVehicleIsACTIVE(String vehicleId) {
+        StoredProcedureQuery query = entityManager.createStoredProcedureQuery("CheckVehicleIsACTIVE");
+        query.registerStoredProcedureParameter("vehicleId", String.class, IN);
+        query.setParameter("vehicleId", vehicleId);
+        query.registerStoredProcedureParameter("isValid", Boolean.class, OUT);
+        query.execute();
+
+        return (Boolean) query.getOutputParameterValue("isValid");
+    }
 }

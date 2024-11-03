@@ -13,6 +13,8 @@ public interface TripRepository extends JpaRepository<Trip, String>, JpaSpecific
 
     boolean existsById(String id);
 
+    Boolean checkVehicleIsACTIVE(String vehicleId);
+
     Boolean checkVehicleAssignmentExists(String departureDate, String departureTime, String arrivalDate,
             String arrivalTime, String vehicleId, String tripId
     );

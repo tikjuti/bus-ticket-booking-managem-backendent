@@ -8,7 +8,6 @@ import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.SeatResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
 import com.tikjuti.bus_ticket_booking.entity.Seat;
-import com.tikjuti.bus_ticket_booking.entity.Trip;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
 import com.tikjuti.bus_ticket_booking.entity.VehicleType;
 import com.tikjuti.bus_ticket_booking.enums.SeatStatus;
@@ -23,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -169,12 +169,13 @@ public class VehicleService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public void deleteVehicle(String vehicleId) {
-        vehicleRepository.findById(vehicleId)
-                .map(vehicle -> {
-                    vehicleRepository.delete(vehicle);
-                    return true;
-                })
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found for ID: " + vehicleId));
+
+        vehicle.getSeats().clear();
+        vehicleRepository.delete(vehicle);
     }
+
 }

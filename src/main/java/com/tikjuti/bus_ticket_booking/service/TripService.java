@@ -86,6 +86,12 @@ public class TripService {
                 .findById(request.getVehicleId())
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
+        boolean checkVehicleIsACTIVE = tripRepository.checkVehicleIsACTIVE(request.getVehicleId());
+
+        if (checkVehicleIsACTIVE) {
+            throw new AppException(ErrorCode.VEHICLE_NOT_ACTIVE);
+        }
+
         Route route = routeRepository
                 .findById(request.getRouteId())
                 .orElseThrow(() -> new RuntimeException("Route not found"));
@@ -179,6 +185,12 @@ public class TripService {
                 .findById(request.getVehicleId())
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
+        boolean checkVehicleIsACTIVE = tripRepository.checkVehicleIsACTIVE(request.getVehicleId());
+
+        if (checkVehicleIsACTIVE) {
+            throw new AppException(ErrorCode.VEHICLE_NOT_ACTIVE);
+        }
+
         Route route = routeRepository
                 .findById(request.getRouteId())
                 .orElseThrow(() -> new RuntimeException("Route not found"));
@@ -204,6 +216,12 @@ public class TripService {
             Vehicle vehicle = vehicleRepository
                     .findById(request.getVehicleId())
                     .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+            boolean checkVehicleIsACTIVE = tripRepository.checkVehicleIsACTIVE(request.getVehicleId());
+
+            if (checkVehicleIsACTIVE) {
+                throw new AppException(ErrorCode.VEHICLE_NOT_ACTIVE);
+            }
             trip.setVehicle(vehicle);
         }
 
