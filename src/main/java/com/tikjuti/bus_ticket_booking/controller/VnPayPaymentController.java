@@ -2,6 +2,7 @@ package com.tikjuti.bus_ticket_booking.controller;
 
 import com.tikjuti.bus_ticket_booking.dto.request.VNPAY.VnPayQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.VNPAY.VnPayRefundRequest;
+import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VnPayTransactionResponse;
 import com.tikjuti.bus_ticket_booking.service.VnPayService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,21 +23,30 @@ public class VnPayPaymentController {
     private VnPayService vnPayService;
 
     @GetMapping("/create")
-    public ResponseEntity<String> createPayment(HttpServletRequest request, @RequestParam("amount") String amount) {
+    public ResponseEntity<ApiResponse<String>> createPayment(HttpServletRequest request,
+                                                             @RequestParam("order_id") String orderId,
+                                                             @RequestParam("amount") String amount) {
         try {
             request.setAttribute("amount", amount);
+            request.setAttribute("order_id", orderId);
 
-            String paymentUrl = vnPayService.createPayment(request).toString();
+            ApiResponse<String> paymentUrl = vnPayService.createPayment(request);
             return ResponseEntity.ok(paymentUrl);
 
         } catch (UnsupportedEncodingException e) {
             log.error("Error creating payment URL: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: Unable to create payment URL. Details: " + e.getMessage());
+
+            // Trả về lỗi với thông báo chi tiết bọc trong ApiResponse
+            ApiResponse<String> errorResponse =
+                    new ApiResponse<>(404, "Error: Unable to create payment URL. Details: " + e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         } catch (Exception e) {
             log.error("Unexpected error: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Unexpected error occurred: " + e.getMessage());
+
+            // Trả về lỗi chung với thông báo chi tiết bọc trong ApiResponse
+            ApiResponse<String> errorResponse =
+                    new ApiResponse<>(404, "Unexpected error occurred: " + e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 

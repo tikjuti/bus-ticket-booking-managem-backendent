@@ -68,10 +68,10 @@ public class TicketService {
         for (Object[] trip : trips) {
             BuyTicketResponse buyTicketResponse = new BuyTicketResponse();
 
-            java.sql.Date departureDateSql = (Date) trip[1];
-            Time departureTimeSql = (Time) trip[2];
-            java.sql.Date arrivalDateSql = (Date) trip[3];
-            Time arrivalTimeSql = (Time) trip[4];
+            java.sql.Date departureDateSql = (Date) trip[3];
+            Time departureTimeSql = (Time) trip[4];
+            java.sql.Date arrivalDateSql = (Date) trip[1];
+            Time arrivalTimeSql = (Time) trip[2];
 
             LocalDate departureDate = departureDateSql.toLocalDate();
             LocalTime departureTime = departureTimeSql.toLocalTime();
@@ -88,6 +88,7 @@ public class TicketService {
                     .findById((String) trip[6])
                     .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
+            buyTicketResponse.setVehicleId(vehicle.getId());
             buyTicketResponse.setVehicleName(vehicle.getVehicleName());
 
             Route route = new Route();
@@ -132,6 +133,7 @@ public class TicketService {
                 .findById((trip.getVehicle().getId()))
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
+        buyTicketResponse.setVehicleId(vehicle.getId());
         buyTicketResponse.setVehicleName(vehicle.getVehicleName());
 
 

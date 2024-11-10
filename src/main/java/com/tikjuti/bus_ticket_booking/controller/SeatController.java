@@ -1,5 +1,6 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
+import com.tikjuti.bus_ticket_booking.dto.request.Seat.SeatLockRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Seat.SeatUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.SeatResponse;
@@ -26,6 +27,18 @@ public class SeatController {
         apiResponse.setMessage("Get seat by vehicle id successfully");
         apiResponse.setCode(HttpStatus.OK.value());
         apiResponse.setResult(seatService.getSeatBuyVehicleId(vehicleId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/lock")
+    ResponseEntity<ApiResponse<SeatResponse>> lockSeat(@RequestBody SeatLockRequest request)
+    {
+        ApiResponse<SeatResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Seat locked successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(seatService.lockSeat(request));
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }

@@ -1,6 +1,7 @@
 package com.tikjuti.bus_ticket_booking.service;
 
 
+import com.tikjuti.bus_ticket_booking.configuration.ZaloPayConfig;
 import com.tikjuti.bus_ticket_booking.dto.request.MoMo.MoMoPaymentRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.MoMo.MoMoQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.MoMoPaymentResponse;
@@ -8,6 +9,7 @@ import com.tikjuti.bus_ticket_booking.dto.response.MoMoQueryResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.utils.Hex;
 import org.apache.hc.core5.http.ContentType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -57,10 +59,43 @@ public class MoMoPaymentService {
 
     String requestType = "payWithMethod";
     Boolean autoCapture = true;
-    String requestId = UUID.randomUUID().toString();
+    String getRedirectUrl = null;
 
     public MoMoPaymentResponse createPayment(MoMoPaymentRequest request) throws Exception {
         String signature = generateSignature(request);
+        Map<String, Object> orderData = getStringObjectMap(request, signature);
+
+        log.warn("Request to MoMo API: {}", orderData);
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpPost postRequest = new HttpPost(endpoint);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonBody = objectMapper.writeValueAsString(orderData);
+
+            StringEntity entity = new StringEntity(jsonBody, ContentType.APPLICATION_JSON);
+            postRequest.setEntity(entity);
+
+            try (CloseableHttpResponse response = httpClient.execute(postRequest)) {
+                int statusCode = response.getCode();
+
+                if (statusCode == 200) {
+                    String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
+                    log.warn("Response from MoMo API: {}", responseString);
+
+                    MoMoPaymentResponse momoResponse = objectMapper.readValue(responseString, MoMoPaymentResponse.class);
+
+                    return momoResponse;
+                } else {
+                    throw new Exception("Error occurred while calling MoMo API. HTTP Status: " + statusCode);
+                }
+            }
+        }
+    }
+
+    private Map<String, Object> getStringObjectMap(MoMoPaymentRequest request, String signature) {
+        String[] parts = request.getOrderId().split("_");
+        getRedirectUrl = redirectUrl + "/" + parts[0];
 
         Map<String, Object> userInfor = new HashMap<>();
         userInfor.put("name", request.getCustomerName());
@@ -81,50 +116,25 @@ public class MoMoPaymentService {
 
         Map<String, Object> orderData = new HashMap<>() {
             {
-                put("requestId", requestId);
-                put("orderId", request.getOrderId());
-                put("orderInfo", request.getOrderInfo());
                 put("partnerCode", partnerCode);
                 put("partnerName", partnerName);
+                put("requestId", request.getRequestId());
+                put("amount", request.getAmount());
+                put("orderId", request.getOrderId());
+                put("orderInfo", request.getOrderInfo());
                 put("storeId", storeId);
-                put("accessKey", accessKey);
-                put("redirectUrl", redirectUrl);
+                put("redirectUrl", getRedirectUrl);
                 put("ipnUrl", ipnUrl);
+                put("extraData", request.getExtraData());
                 put("items", items);
                 put("lang", lang);
+                put("signature", signature);
                 put("userInfor", userInfor);
-                put("extraData", request.getExtraData());
                 put("requestType", requestType);
                 put("autoCapture", autoCapture);
-                put("signature", signature);
-                put("amount", request.getAmount());
             }
         };
-
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestBody = objectMapper.writeValueAsString(orderData);
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpPost httpPost = new HttpPost(endpoint);
-            httpPost.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON)); // Chỉnh sửa ContentType
-            httpPost.setHeader("Content-type", "application/json");
-
-            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-                int statusCode = response.getCode();
-
-                if (statusCode == 200) {
-                    String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
-                    log.warn("Response from MoMo API: {}", responseString);
-
-                    MoMoPaymentResponse momoResponse = objectMapper.readValue(responseString, MoMoPaymentResponse.class);
-
-                    return momoResponse;
-                } else {
-                    throw new Exception("Error occurred while calling MoMo API. HTTP Status: " + statusCode);
-                }
-            }
-        }
+        return orderData;
     }
 
     public MoMoQueryResponse query(MoMoQueryRequest request) throws Exception {
@@ -176,11 +186,14 @@ public class MoMoPaymentService {
     }
 
     private String generateSignature(MoMoPaymentRequest request) {
+        String[] parts = request.getOrderId().split("_");
+        getRedirectUrl = redirectUrl + "/" + parts[0];
+
         String rawData = "accessKey=" + accessKey + "&amount=" + request.getAmount() +
                 "&extraData=" + request.getExtraData() + "&ipnUrl=" + ipnUrl +
                 "&orderId=" + request.getOrderId() + "&orderInfo=" + request.getOrderInfo() +
-                "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl +
-                "&requestId=" + requestId + "&requestType=" + requestType;
+                "&partnerCode=" + partnerCode + "&redirectUrl=" + getRedirectUrl +
+                "&requestId=" + request.getRequestId() + "&requestType=" + requestType;
 
         return HmacSHA256(secretKey, rawData);
     }

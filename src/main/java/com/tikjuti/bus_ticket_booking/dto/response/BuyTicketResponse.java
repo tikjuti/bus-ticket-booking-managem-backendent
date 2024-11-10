@@ -23,6 +23,7 @@ public class BuyTicketResponse {
     LocalTime departureTime;
     LocalDate arrivalDate;
     LocalTime arrivalTime;
+    String vehicleId;
     String vehicleName;
 
     RouteResponse route;

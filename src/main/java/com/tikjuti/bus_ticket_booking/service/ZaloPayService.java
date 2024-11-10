@@ -39,6 +39,7 @@ public class ZaloPayService {
         String endpoint = zaloPayConfig.getEndpoint();
         String callbackUrl = zaloPayConfig.getCallbackUrl();
         String redirectBaseUrl = zaloPayConfig.getRedirectBaseUrl();
+        String[] parts = request.getOrderId().split("_");
 
         List<ZaloPayPaymentRequest> items = new ArrayList<>();
         items.add(new ZaloPayPaymentRequest(
@@ -54,21 +55,29 @@ public class ZaloPayService {
 
         Gson gson = new Gson();
         String itemsJson = gson.toJson(items);
-        Map<String, Object> embed_data = new HashMap() {
 
-            {
-                put("redirectUrl", redirectBaseUrl + "/" + request.getOrderId());
-            }
-        };
+        JsonObject embed_data = new JsonObject();
 
-        String embedDataJson = gson.toJson(embed_data);
+        if (redirectBaseUrl != null) {
+            embed_data.addProperty("redirecturl", redirectBaseUrl + "/" + parts[0]);
+        } else {
+            log.warn("redirectBaseUrl is null!");
+        }
+
+
+        // Khởi tạo Gson để chuyển đổi map thành JSON
+        Gson gsonEmbeb = new Gson();
+        String embedDataJson = gsonEmbeb.toJson(embed_data);
+
+        String extracted = zaloPayConfig.extractAfterLastHyphen(request.getOrderId());
+        String result = zaloPayConfig.generateNumericHash(extracted);
 
         Map<String, Object> orderData = new HashMap<String, Object>();
         orderData.put("app_id", app_id);
         orderData.put("app_user", request.getCustomerName()+request.getPhone());
         orderData.put("app_time", System.currentTimeMillis());
         orderData.put("amount", request.getAmount());
-        orderData.put("app_trans_id", DateTimeUtil.getCurrentTimeString("yyMMdd") + "_" + request.getOrderId());
+        orderData.put("app_trans_id", DateTimeUtil.getCurrentTimeString("yyMMdd") + "_" + result);
         orderData.put("bank_code", "");
         orderData.put("embed_data", embedDataJson);
         orderData.put("item", itemsJson);

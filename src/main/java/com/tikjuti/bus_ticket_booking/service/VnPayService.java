@@ -3,8 +3,10 @@ package com.tikjuti.bus_ticket_booking.service;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.tikjuti.bus_ticket_booking.configuration.VnPayConfig;
+import com.tikjuti.bus_ticket_booking.configuration.ZaloPayConfig;
 import com.tikjuti.bus_ticket_booking.dto.request.VNPAY.VnPayQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.VNPAY.VnPayRefundRequest;
+import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VnPayTransactionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -26,16 +28,24 @@ import java.util.*;
 public class VnPayService {
 
     @Autowired
-    private VnPayConfig VnPayConfig;
+    private VnPayConfig vnPayConfig;
+    @Autowired
+    private ZaloPayConfig zaloPayConfig;
 
-    public String createPayment(HttpServletRequest request) throws UnsupportedEncodingException {
+    public ApiResponse<String> createPayment(HttpServletRequest request) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "250000";
-        long amount = Integer.parseInt(request.getParameter("amount")) * 100;
-        String vnp_TxnRef = VnPayConfig.getRandomNumber(8);
-        String vnp_IpAddr = VnPayConfig.getIpAddress(request);
-        String vnp_TmnCode = VnPayConfig.vnp_TmnCode;
+        int amount = Integer.parseInt(request.getParameter("amount")) * 100;
+
+        String extracted = zaloPayConfig.extractAfterLastHyphen(request.getParameter("order_id"));
+        String result = zaloPayConfig.generateNumericHash(extracted);
+
+        String[] parts = request.getParameter("order_id").split("_");
+
+        String vnp_TxnRef = result;
+        String vnp_IpAddr = vnPayConfig.getIpAddress(request);
+        String vnp_TmnCode = vnPayConfig.vnp_TmnCode;
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
@@ -48,7 +58,7 @@ public class VnPayService {
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", VnPayConfig.vnp_ReturnUrl);
+        vnp_Params.put("vnp_ReturnUrl", vnPayConfig.vnp_ReturnUrl + "/" + parts[0]);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -60,11 +70,14 @@ public class VnPayService {
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
+        log.info("vnp_Params: {}", vnp_Params);
+
         List fieldNames = new ArrayList(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
         Iterator itr = fieldNames.iterator();
+
         while (itr.hasNext()) {
             String fieldName = (String) itr.next();
             String fieldValue = (String) vnp_Params.get(fieldName);
@@ -84,18 +97,23 @@ public class VnPayService {
             }
         }
         String queryUrl = query.toString();
-        String vnp_SecureHash = VnPayConfig.hmacSHA512(VnPayConfig.secretKey, hashData.toString());
+        String vnp_SecureHash = vnPayConfig.hmacSHA512(vnPayConfig.secretKey, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        String paymentUrl = VnPayConfig.vnp_PayUrl + "?" + queryUrl;
+        String paymentUrl = vnPayConfig.vnp_PayUrl + "?" + queryUrl;
 
-        return paymentUrl;
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setMessage("Success");
+        response.setResult(paymentUrl);
+
+        return response;
     }
 
     public VnPayTransactionResponse queryTransaction(VnPayQueryRequest request) throws IOException {
-        String vnp_RequestId = VnPayConfig.getRandomNumber(8);
+        String vnp_RequestId = vnPayConfig.getRandomNumber(8);
         String vnp_Version = "2.1.0";
         String vnp_Command = "querydr";
-        String vnp_TmnCode = VnPayConfig.vnp_TmnCode;
+        String vnp_TmnCode = vnPayConfig.vnp_TmnCode;
         String vnp_TxnRef = request.getOrder_id();
         String vnp_OrderInfo = "Kiem tra ket qua GD OrderId:" + vnp_TxnRef;
 
@@ -105,7 +123,7 @@ public class VnPayService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
 
-        String vnp_IpAddr = VnPayConfig.getIpAddress(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
+        String vnp_IpAddr = vnPayConfig.getIpAddress(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
 
         JsonObject vnp_Params = new JsonObject ();
 
@@ -121,11 +139,11 @@ public class VnPayService {
         vnp_Params.addProperty("vnp_IpAddr", vnp_IpAddr);
 
         String hash_Data= String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TxnRef, vnp_TransDate, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
-        String vnp_SecureHash = VnPayConfig.hmacSHA512(VnPayConfig.secretKey, hash_Data.toString());
+        String vnp_SecureHash = vnPayConfig.hmacSHA512(vnPayConfig.secretKey, hash_Data.toString());
 
         vnp_Params.addProperty("vnp_SecureHash", vnp_SecureHash);
 
-        URL url = new URL(VnPayConfig.vnp_ApiUrl);
+        URL url = new URL(vnPayConfig.vnp_ApiUrl);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
@@ -153,10 +171,10 @@ public class VnPayService {
     }
 
     public VnPayTransactionResponse refundTransactions(VnPayRefundRequest request) throws IOException {
-        String vnp_RequestId = VnPayConfig.getRandomNumber(8);
+        String vnp_RequestId = vnPayConfig.getRandomNumber(8);
         String vnp_Version = "2.1.0";
         String vnp_Command = "refund";
-        String vnp_TmnCode = VnPayConfig.vnp_TmnCode;
+        String vnp_TmnCode = vnPayConfig.vnp_TmnCode;
         String vnp_TransactionType = request.getTransactionType();
         String vnp_TxnRef = request.getOrderId();
         long amount = Integer.parseInt(request.getAmount())*100;
@@ -170,7 +188,7 @@ public class VnPayService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
 
-        String vnp_IpAddr = VnPayConfig.getIpAddress(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
+        String vnp_IpAddr = vnPayConfig.getIpAddress(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
 
         JsonObject  vnp_Params = new JsonObject ();
 
@@ -197,11 +215,11 @@ public class VnPayService {
                 vnp_TransactionType, vnp_TxnRef, vnp_Amount, vnp_TransactionNo, vnp_TransactionDate,
                 vnp_CreateBy, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
 
-        String vnp_SecureHash = VnPayConfig.hmacSHA512(VnPayConfig.secretKey, hash_Data.toString());
+        String vnp_SecureHash = vnPayConfig.hmacSHA512(vnPayConfig.secretKey, hash_Data.toString());
 
         vnp_Params.addProperty("vnp_SecureHash", vnp_SecureHash);
 
-        URL url = new URL(VnPayConfig.vnp_ApiUrl);
+        URL url = new URL(vnPayConfig.vnp_ApiUrl);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");

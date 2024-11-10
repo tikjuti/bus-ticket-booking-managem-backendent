@@ -45,7 +45,6 @@ public class RouteService {
                 .save(route);
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public PaginatedResult<Route> getRoutes(RouteQueryRequest queryRequest) {
         Map<String, Object> filterParams = new HashMap<>();
 

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 
 @Data
 @NoArgsConstructor
@@ -13,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MoMoPaymentRequest {
     String orderId ;
+    String requestId  = UUID.randomUUID().toString();
     String orderInfo ;
     String routeName;
     String departureTime;

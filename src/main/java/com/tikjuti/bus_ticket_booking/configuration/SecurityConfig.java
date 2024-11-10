@@ -26,6 +26,7 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS_POST = {
             "/api/tickets/buyTicket",
+            "/api/seats/lock",
             "/api/customers",
             "/api/auth/token",
             "/api/auth/introspect",
@@ -49,6 +50,7 @@ public class SecurityConfig {
             "/api/paymentMethods",
             "/api/paymentMethods/{id}",
             "/api/prices",
+            "/api/routes",
             "/api/vnpay/create",
             "/api/tickets/buyTicket/{tripId}",
     };

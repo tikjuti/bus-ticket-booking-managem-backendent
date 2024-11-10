@@ -24,7 +24,6 @@ public class MoMoPaymentResponse {
     Long responseTime;
     String message;
     Integer resultCode;
-    String qrCodeUrl;
     String payUrl;
 
     public MoMoPaymentResponse() {
