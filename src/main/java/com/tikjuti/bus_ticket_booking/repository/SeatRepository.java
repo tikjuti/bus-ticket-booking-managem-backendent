@@ -15,4 +15,5 @@ public interface SeatRepository extends JpaRepository<Seat, String>,
     Boolean checkPosition(String p_vehicle_id,  String p_seat_id, String p_new_position);
 
     Set<Seat> findByVehicleId(String vehicleId);
+
 }

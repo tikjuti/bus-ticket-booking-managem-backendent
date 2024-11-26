@@ -39,11 +39,12 @@ public class Ticket {
     @JoinColumn(name = "payment_method_id")
     PaymentMethod paymentMethod;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "seat_id")
-    Seat seat;
+    String seatId;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
     Employee employee;
+
+    private boolean isEmailSent = false;
+
 }

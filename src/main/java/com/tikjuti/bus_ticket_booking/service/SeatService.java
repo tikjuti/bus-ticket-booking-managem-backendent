@@ -4,23 +4,29 @@ import com.tikjuti.bus_ticket_booking.dto.request.Seat.SeatLockRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Seat.SeatUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.SeatResponse;
 import com.tikjuti.bus_ticket_booking.entity.Seat;
+import com.tikjuti.bus_ticket_booking.entity.Trip;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
 import com.tikjuti.bus_ticket_booking.enums.SeatStatus;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.SeatMapper;
 import com.tikjuti.bus_ticket_booking.repository.SeatRepository;
+import com.tikjuti.bus_ticket_booking.repository.TripRepository;
 import com.tikjuti.bus_ticket_booking.repository.VehicleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -33,11 +39,13 @@ public class SeatService {
     private VehicleRepository vehicleRepository;
 
     @Autowired
+    private TripRepository tripRepository;
+
+    @Autowired
     private SeatMapper seatMapper;
 
     private Map<String, LocalTime> lockExpiryMap = new HashMap<>();
 
-    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public Set<SeatResponse> getSeatBuyVehicleId(String vehicleId) {
         Set<Seat> seats = seatRepository.findByVehicleId(vehicleId);
 
@@ -78,12 +86,60 @@ public class SeatService {
                 Seat seat = seatRepository
                         .findById(entry.getKey())
                         .orElseThrow(() -> new RuntimeException("Seat not found"));
-                seat.setStatus(SeatStatus.AVAILABLE.name());
+                if (seat.getStatus().equals(SeatStatus.LOCKED.name())) {
+                    seat.setStatus(SeatStatus.AVAILABLE.name());
+                }
                 seatRepository.save(seat);
                 return true;
             }
             return false;
         });
+    }
+
+    @Scheduled(fixedRate = 3600000)
+    @Transactional
+    public void updateSeatStatusForCompletedTrips() {
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+
+        List<Trip> completedTrips = tripRepository.findCompletedTrips(currentDate, currentTime);
+
+        for (Trip trip : completedTrips) {
+            String vehicleId = trip.getVehicle().getId();
+
+            log.warn("Trip {} has been completed", vehicleId);
+
+            List<Trip> tripsUsingSameVehicle = tripRepository.findByVehicleId(vehicleId);
+
+            boolean hasIncompleteTrip = tripsUsingSameVehicle.stream()
+                    .anyMatch(t -> {
+                        if (!t.getArrivalDate().isBefore(currentDate)) {
+                            return t.getArrivalDate().isEqual(currentDate) && t.getArrivalTime().isAfter(currentTime);
+                        }
+                        return false;
+                    });
+
+
+            if (hasIncompleteTrip) {
+                continue;
+            }
+
+            Set<Seat> seats = seatRepository.findByVehicleId(vehicleId);
+
+            seats.stream()
+                    .filter(seat -> seat.getStatus().equals(SeatStatus.OCCUPIED.name()))
+                    .forEach(seat -> log.warn("Seat {} is now available", seat.getId()));
+
+            seats.parallelStream()
+                    .filter(seat -> !seat.getStatus().equals(SeatStatus.AVAILABLE.name()))
+                    .forEach(seat -> {
+                        if (seat.getStatus().equals(SeatStatus.OCCUPIED.name())) {
+                            seat.setStatus(SeatStatus.AVAILABLE.name());
+
+                        }
+                    });
+            seatRepository.saveAll(seats);
+        }
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
@@ -114,7 +170,6 @@ public class SeatService {
                 .toSeatResponse(seatRepository.save(seat));
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public SeatResponse patchUpdateSeat(SeatUpdateRequest request, String seatId) {
         Seat seat = seatRepository
                 .findById(seatId)

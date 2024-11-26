@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,4 +17,5 @@ import lombok.experimental.FieldDefaults;
 public class PaymentMethodResponse {
     String id;
     String methodName;
+    Set<String> roles;
 }

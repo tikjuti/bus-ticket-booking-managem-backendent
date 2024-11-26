@@ -2,10 +2,7 @@
 package com.tikjuti.bus_ticket_booking.controller;
 
 import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
-import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketQueryRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketUpdateRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Ticket.BuyTicketRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Ticket.*;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.BuyTicketResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.TicketResponse;
@@ -55,6 +52,17 @@ public class TicketController {
         apiResponse.setCode(HttpStatus.CREATED.value());
         apiResponse.setMessage("Ticket created successfully");
         apiResponse.setResult(ticketService.createTicket(request));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/lookup")
+    ResponseEntity<ApiResponse<TicketResponse>> lookupTicket(@RequestBody LookUpTicketRequest request) {
+        ApiResponse<TicketResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setCode(HttpStatus.CREATED.value());
+        apiResponse.setMessage("Ticket look up successfully");
+        apiResponse.setResult(ticketService.getTicketByTicketIdAndPhone(request));
 
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }

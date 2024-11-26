@@ -26,6 +26,7 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS_POST = {
             "/api/tickets/buyTicket",
+            "/api/tickets/lookup",
             "/api/seats/lock",
             "/api/customers",
             "/api/auth/token",
@@ -53,6 +54,16 @@ public class SecurityConfig {
             "/api/routes",
             "/api/vnpay/create",
             "/api/tickets/buyTicket/{tripId}",
+            "api/seats/{vehicleId}",
+    };
+
+    private final String[] PUBLIC_ENDPOINTS_PUT = {
+            "/api/customers/{id}",
+    };
+
+    private final String[] PUBLIC_ENDPOINTS_PATCH = {
+            "/api/customers/{id}",
+            "/api/seats/{id}",
     };
 
     @Bean
@@ -67,8 +78,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS_POST).permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/customers/{id}").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/api/customers/{id}").permitAll()
+                        .requestMatchers(HttpMethod.PUT, PUBLIC_ENDPOINTS_PUT).permitAll()
+                        .requestMatchers(HttpMethod.PATCH, PUBLIC_ENDPOINTS_PATCH).permitAll()
 
                         .anyRequest().authenticated());
 

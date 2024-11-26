@@ -78,6 +78,20 @@ public class PaymentMethodController {
 
     }
 
+    @PatchMapping("/{paymentMethodId}")
+    ResponseEntity<ApiResponse<PaymentMethodResponse>> patchPaymentMethod(@PathVariable String paymentMethodId,
+                                                                           @RequestBody PaymentMethodUpdateRequest request)
+    {
+        ApiResponse<PaymentMethodResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Payment method update successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(paymentMethodService.patchUpdatePaymentMethod(request, paymentMethodId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+    }
+
     @DeleteMapping("/{paymentMethodId}")
     ResponseEntity<Void> deletePaymentMethod(@PathVariable String paymentMethodId) {
 

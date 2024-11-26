@@ -20,4 +20,6 @@ public interface TicketRepository extends JpaRepository<Ticket, String>,
     int findAvailableSeatsByVehicleId(String vehicleId);
 
     int findTicketPrice(String vehicleId, String routeId);
+
+    List<Ticket> findByTripIdsAndEmailNotSent(List<String> tripIds);
 }

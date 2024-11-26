@@ -2,10 +2,8 @@ package com.tikjuti.bus_ticket_booking.service;
 
 import com.tikjuti.bus_ticket_booking.Utils.PaginatedResult;
 import com.tikjuti.bus_ticket_booking.Utils.QueryableExtensions;
-import com.tikjuti.bus_ticket_booking.dto.request.Ticket.BuyTicketRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketCreationRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketQueryRequest;
-import com.tikjuti.bus_ticket_booking.dto.request.Ticket.TicketUpdateRequest;
+import com.tikjuti.bus_ticket_booking.dto.request.Authencation.MailBody;
+import com.tikjuti.bus_ticket_booking.dto.request.Ticket.*;
 import com.tikjuti.bus_ticket_booking.dto.response.BuyTicketResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.RouteResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.TicketResponse;
@@ -15,8 +13,10 @@ import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.RouteMapper;
 import com.tikjuti.bus_ticket_booking.mapper.TicketMapper;
 import com.tikjuti.bus_ticket_booking.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class TicketService {
     @Autowired
@@ -54,6 +56,8 @@ public class TicketService {
     private TicketMapper ticketMapper;
     @Autowired
     private RouteMapper routeMapper;
+    @Autowired
+    private EmailService emailService;
 
     DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -117,6 +121,65 @@ public class TicketService {
 
         return buyTicketResponses;
     }
+
+
+    @Scheduled(fixedRate = 3600000)
+    @Transactional
+    public void sendInforTicketForUser() {
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+
+        List<Trip> upcomingTrips = tripRepository.findStartingTrips(currentDate, currentTime);
+
+        List<String> tripIds = upcomingTrips.stream().map(Trip::getId).collect(Collectors.toList());
+        List<Ticket> tickets = ticketRepository.findByTripIdsAndEmailNotSent(tripIds);
+
+        for (Ticket ticket : tickets) {
+            String customerEmail = ticket.getCustomer().getEmail();
+            if (customerEmail != null && !customerEmail.isEmpty()) {
+                String emailContent = buildEmailContent(ticket);
+
+                try {
+                    MailBody mailBody = MailBody.builder()
+                            .to(customerEmail)  // Địa chỉ email người nhận
+                            .text(emailContent)  // Nội dung email và chỉ định 'true' để là HTML
+                            .subject("Thông tin vé email của bạn")  // Tiêu đề email
+                            .build();
+
+
+                    emailService.sendSimpleMessage(mailBody);
+                    ticket.setEmailSent(true);
+                } catch (Exception e) {
+                    System.err.println("Lỗi khi gửi email cho vé ID: " + ticket.getId());
+                }
+            }
+        }
+
+        ticketRepository.saveAll(tickets);
+
+    }
+
+    private String buildEmailContent(Ticket ticket) {
+        return "Xin chào " + ticket.getCustomer().getCustomerName() + ",\n\n"
+                + "Cảm ơn bạn đã đặt vé với chúng tôi! Dưới đây là thông tin vé của bạn:\n\n"
+                + "--------------------------------------------------\n"
+                + "Mã vé          : " + ticket.getId() + "\n"
+                + "Chuyến xe      : " + ticket.getTrip().getRoute().getDepartureLocation()
+                + " - " + ticket.getTrip().getRoute().getArrivalLocation() + "\n"
+                + "Ngày khởi hành : " + ticket.getTrip().getDepartureDate() + "\n"
+                + "Giờ khởi hành  : " + ticket.getTrip().getDepartureTime() + "\n"
+                + "Điểm đi        : " + ticket.getTrip().getRoute().getDeparturePoint() + "\n"
+                + "Điểm đến       : " + ticket.getTrip().getRoute().getArrivalPoint() + "\n\n"
+                + "Tên xe         : " + ticket.getTrip().getVehicle().getVehicleName() + "\n"
+                + "Biển số        : " + ticket.getTrip().getVehicle().getLicensePlate() + "\n"
+                + "Giá vé         : " + ticket.getActualTicketPrice() + " VND\n"
+                + "--------------------------------------------------\n\n"
+                + "Chúc bạn có một chuyến đi an toàn và thoải mái!\n\n"
+                + "Trân trọng,\n"
+                + "Đội ngũ hỗ trợ";
+    }
+
+
 
     public BuyTicketResponse buyTicketById(String tripId) {
         Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new RuntimeException("Trip not found"));
@@ -218,7 +281,7 @@ public class TicketService {
         ticket.setBookingTime(bookingTime);
         ticket.setStatusPayment(request.getStatusPayment().name());
         ticket.setPaymentMethod(paymentMethod);
-        ticket.setSeat(seat);
+        ticket.setSeatId(seat.getId());
         ticket.setTrip(trip);
 
         return ticketRepository.save(ticket);
@@ -260,6 +323,13 @@ public class TicketService {
         return ticketMapper
                 .toTicketResponse(
                         ticketRepository.findById(ticketId)
+                                .orElseThrow(() -> new RuntimeException("Ticket not found")));
+    }
+
+    public TicketResponse getTicketByTicketIdAndPhone(LookUpTicketRequest request) {
+        return ticketMapper
+                .toTicketResponse(
+                        ticketRepository.findTicketByTicketIdAndPhone(request.getTicketId(), request.getPhone())
                                 .orElseThrow(() -> new RuntimeException("Ticket not found")));
     }
 
@@ -311,7 +381,7 @@ public class TicketService {
         ticket.setBookingTime(bookingTime);
         ticket.setStatusPayment(request.getStatusPayment().name());
         ticket.setPaymentMethod(paymentMethod);
-        ticket.setSeat(seat);
+        ticket.setSeatId(seat.getId());
         ticket.setTrip(trip);
         ticket.setCustomer(customer);
 
@@ -360,7 +430,7 @@ public class TicketService {
             Seat seat = seatRepository
                     .findById(request.getSeatId())
                     .orElseThrow(() -> new RuntimeException("Seat not found"));
-            ticket.setSeat(seat);
+            ticket.setSeatId(seat.getId());
         }
 
         if (request.getTripId() != null) {

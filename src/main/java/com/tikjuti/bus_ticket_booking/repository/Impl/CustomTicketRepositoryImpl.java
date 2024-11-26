@@ -1,5 +1,6 @@
 package com.tikjuti.bus_ticket_booking.repository.Impl;
 
+import com.tikjuti.bus_ticket_booking.entity.Ticket;
 import com.tikjuti.bus_ticket_booking.repository.CustomTicketRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -9,6 +10,8 @@ import static jakarta.persistence.ParameterMode.OUT;
 
 
 import java.util.List;
+import java.util.Optional;
+
 public class CustomTicketRepositoryImpl implements CustomTicketRepository {
     @PersistenceContext
     private EntityManager entityManager;
@@ -52,5 +55,23 @@ public class CustomTicketRepositoryImpl implements CustomTicketRepository {
                 .setParameter("vehicleId", vehicleId)
                 .setParameter("routeId", routeId)
                 .getSingleResult()).intValue();
+    }
+
+    @Override
+    public Optional<Ticket> findTicketByTicketIdAndPhone(String ticketId, String phone) {
+        String jpql = "SELECT t FROM Ticket t WHERE t.id = :ticketId AND t.customer.phone = :phone";
+        return entityManager.createQuery(jpql, Ticket.class)
+                .setParameter("ticketId", ticketId)
+                .setParameter("phone", phone)
+                .getResultStream()
+                .findFirst();
+    }
+
+    @Override
+    public List<Ticket> findByTripIdsAndEmailNotSent(List<String> tripIds) {
+        String jpql = "SELECT t FROM Ticket t WHERE t.trip.id IN :tripIds AND t.isEmailSent = false";
+        return entityManager.createQuery(jpql, Ticket.class)
+                .setParameter("tripIds", tripIds)
+                .getResultList();
     }
 }

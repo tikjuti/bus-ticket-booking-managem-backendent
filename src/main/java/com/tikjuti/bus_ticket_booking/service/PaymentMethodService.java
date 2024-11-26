@@ -6,8 +6,8 @@ import com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod.PaymentMethodCre
 import com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod.PaymentMethodQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.PaymentMethod.PaymentMethodUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.PaymentMethodResponse;
-import com.tikjuti.bus_ticket_booking.entity.EmployeeType;
 import com.tikjuti.bus_ticket_booking.entity.PaymentMethod;
+import com.tikjuti.bus_ticket_booking.enums.AccountRole;
 import com.tikjuti.bus_ticket_booking.exception.AppException;
 import com.tikjuti.bus_ticket_booking.exception.ErrorCode;
 import com.tikjuti.bus_ticket_booking.mapper.PaymentMethodMapper;
@@ -18,7 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 
 @Service
@@ -35,7 +35,14 @@ public class PaymentMethodService {
         if(paymentMethodRepository.existsByMethodName(request.getMethodName()))
             throw new AppException(ErrorCode.PAYMENT_METHOD_EXISTED);
 
-        PaymentMethod paymentMethod = paymentMethodMapper.toPaymentMethod(request);
+        PaymentMethod paymentMethod = new PaymentMethod();
+        paymentMethod.setMethodName(request.getMethodName());
+
+        HashSet<AccountRole> rolesEnum = (HashSet<AccountRole>) request.getRoles();
+        HashSet<String> roles = new HashSet<>();
+        rolesEnum.forEach(role -> roles.add(role.name()));
+
+        paymentMethod.setRoles(roles);
 
         return paymentMethodRepository
                 .save(paymentMethod);
@@ -76,6 +83,30 @@ public class PaymentMethodService {
             throw new AppException(ErrorCode.PAYMENT_METHOD_EXISTED);
 
         paymentMethodMapper.updatePaymentMethod(paymentMethod, request);
+
+        return paymentMethodMapper
+                .toPaymentMethodResponse(paymentMethodRepository.save(paymentMethod));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public PaymentMethodResponse patchUpdatePaymentMethod(PaymentMethodUpdateRequest request, String paymentMethodId) {
+        PaymentMethod paymentMethod = paymentMethodRepository
+                .findById(paymentMethodId)
+                .orElseThrow(() -> new RuntimeException("Payment method not found"));
+
+
+        if (request.getMethodName() != null) {
+            if(paymentMethodRepository.existsByMethodName(request.getMethodName()))
+                throw new AppException(ErrorCode.PAYMENT_METHOD_EXISTED);
+            paymentMethod.setMethodName(request.getMethodName());
+        }
+
+        if (request.getRoles() != null) {
+            HashSet<AccountRole> rolesEnum = (HashSet<AccountRole>) request.getRoles();
+            HashSet<String> roles = new HashSet<>();
+            rolesEnum.forEach(role -> roles.add(role.name()));
+            paymentMethod.setRoles(roles);
+        }
 
         return paymentMethodMapper
                 .toPaymentMethodResponse(paymentMethodRepository.save(paymentMethod));
