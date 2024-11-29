@@ -30,4 +30,5 @@ public class BuyTicketResponse {
 
     int ticketPrice;
     int availableSeats;
+    int totalSeats;
 }

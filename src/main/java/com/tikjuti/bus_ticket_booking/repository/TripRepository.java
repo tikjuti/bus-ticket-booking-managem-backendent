@@ -24,7 +24,5 @@ public interface TripRepository extends JpaRepository<Trip, String>, JpaSpecific
             String arrivalTime, String vehicleId, String tripId
     );
 
-    List<Trip> findCompletedTrips(LocalDate currentDate, LocalTime currentTime);
-
     List<Trip> findStartingTrips(LocalDate currentDate, LocalTime currentTime);
 }

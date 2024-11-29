@@ -48,6 +48,7 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS_GET = {
             "/api/tickets/{id}",
             "/api/vehicles/{id}",
+            "/api/vehicles/type/{vehicleTypeId}",
             "/api/paymentMethods",
             "/api/paymentMethods/{id}",
             "/api/prices",

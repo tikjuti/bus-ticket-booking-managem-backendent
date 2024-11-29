@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 
 
@@ -15,5 +18,7 @@ public interface SeatRepository extends JpaRepository<Seat, String>,
     Boolean checkPosition(String p_vehicle_id,  String p_seat_id, String p_new_position);
 
     Set<Seat> findByVehicleId(String vehicleId);
+
+    List<Seat> findSeatsFromCompletedTrips(LocalDate currentDate, LocalTime currentTime);
 
 }

@@ -94,6 +94,7 @@ public class TicketService {
 
             buyTicketResponse.setVehicleId(vehicle.getId());
             buyTicketResponse.setVehicleName(vehicle.getVehicleName());
+            buyTicketResponse.setTotalSeats(vehicle.getSeatCount());
 
             Route route = new Route();
             route.setId((String) trip[7]);
@@ -123,7 +124,7 @@ public class TicketService {
     }
 
 
-    @Scheduled(fixedRate = 3600000)
+    @Scheduled(fixedRate = 60000)
     @Transactional
     public void sendInforTicketForUser() {
         LocalDate currentDate = LocalDate.now();
@@ -135,6 +136,7 @@ public class TicketService {
         List<Ticket> tickets = ticketRepository.findByTripIdsAndEmailNotSent(tripIds);
 
         for (Ticket ticket : tickets) {
+            log.warn("Gửi email cho vé ID: " + ticket.getId());
             String customerEmail = ticket.getCustomer().getEmail();
             if (customerEmail != null && !customerEmail.isEmpty()) {
                 String emailContent = buildEmailContent(ticket);
@@ -143,7 +145,7 @@ public class TicketService {
                     MailBody mailBody = MailBody.builder()
                             .to(customerEmail)  // Địa chỉ email người nhận
                             .text(emailContent)  // Nội dung email và chỉ định 'true' để là HTML
-                            .subject("Thông tin vé email của bạn")  // Tiêu đề email
+                            .subject("Thông tin xác nhận vé của bạn")  // Tiêu đề email
                             .build();
 
 
@@ -161,7 +163,7 @@ public class TicketService {
 
     private String buildEmailContent(Ticket ticket) {
         return "Xin chào " + ticket.getCustomer().getCustomerName() + ",\n\n"
-                + "Cảm ơn bạn đã đặt vé với chúng tôi! Dưới đây là thông tin vé của bạn:\n\n"
+                + "Cảm ơn bạn đã đặt vé với chúng tôi! Dưới đây là thông tin xác nhận vé của bạn:\n\n"
                 + "--------------------------------------------------\n"
                 + "Mã vé          : " + ticket.getId() + "\n"
                 + "Chuyến xe      : " + ticket.getTrip().getRoute().getDepartureLocation()
@@ -198,7 +200,7 @@ public class TicketService {
 
         buyTicketResponse.setVehicleId(vehicle.getId());
         buyTicketResponse.setVehicleName(vehicle.getVehicleName());
-
+        buyTicketResponse.setTotalSeats(vehicle.getSeatCount());
 
 
         Route route = routeRepository
@@ -281,10 +283,45 @@ public class TicketService {
         ticket.setBookingTime(bookingTime);
         ticket.setStatusPayment(request.getStatusPayment().name());
         ticket.setPaymentMethod(paymentMethod);
-        ticket.setSeatId(seat.getId());
+        ticket.setSeat(seat);
         ticket.setTrip(trip);
 
-        return ticketRepository.save(ticket);
+        Ticket ticketCreated = ticketRepository.save(ticket);
+        String emailContent = buildEmailContentCreateTicket(ticketCreated);
+
+        try {
+            MailBody mailBody = MailBody.builder()
+                    .to(customer.getEmail())  // Địa chỉ email người nhận
+                    .text(emailContent)  // Nội dung email và chỉ định 'true' để là HTML
+                    .subject("Thông tin vé của bạn")  // Tiêu đề email
+                    .build();
+
+
+            emailService.sendSimpleMessage(mailBody);
+            ticket.setEmailSent(true);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi gửi email cho vé ID: " + ticket.getId());
+        }
+
+        return ticketCreated;
+    }
+
+    private String buildEmailContentCreateTicket(Ticket ticket) {
+        return "Xin chào " + ticket.getCustomer().getCustomerName() + ",\n\n"
+                + "Cảm ơn bạn đã đặt vé với chúng tôi! Dưới đây là thông tin vé của bạn:\n\n"
+                + "--------------------------------------------------\n"
+                + "Mã vé          : " + ticket.getId() + "\n"
+                + "Chuyến xe      : " + ticket.getTrip().getRoute().getDepartureLocation()
+                + " - " + ticket.getTrip().getRoute().getArrivalLocation() + "\n"
+                + "Ngày khởi hành : " + ticket.getTrip().getDepartureDate() + "\n"
+                + "Giờ khởi hành  : " + ticket.getTrip().getDepartureTime() + "\n"
+                + "Điểm đi        : " + ticket.getTrip().getRoute().getDeparturePoint() + "\n"
+                + "Điểm đến       : " + ticket.getTrip().getRoute().getArrivalPoint() + "\n\n"
+                + "Tên xe         : " + ticket.getTrip().getVehicle().getVehicleName() + "\n"
+                + "Giá vé         : " + ticket.getActualTicketPrice() + " VND\n"
+                + "--------------------------------------------------\n\n"
+                + "Trân trọng,\n"
+                + "Đội ngũ hỗ trợ";
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
@@ -381,7 +418,7 @@ public class TicketService {
         ticket.setBookingTime(bookingTime);
         ticket.setStatusPayment(request.getStatusPayment().name());
         ticket.setPaymentMethod(paymentMethod);
-        ticket.setSeatId(seat.getId());
+        ticket.setSeat(seat);
         ticket.setTrip(trip);
         ticket.setCustomer(customer);
 
@@ -430,7 +467,7 @@ public class TicketService {
             Seat seat = seatRepository
                     .findById(request.getSeatId())
                     .orElseThrow(() -> new RuntimeException("Seat not found"));
-            ticket.setSeatId(seat.getId());
+            ticket.setSeat(seat);
         }
 
         if (request.getTripId() != null) {
@@ -466,6 +503,7 @@ public class TicketService {
                 ticketRepository.save(ticket));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteTicket(String id) {
         ticketRepository.findById(id)
                 .map(ticket -> {
@@ -474,4 +512,5 @@ public class TicketService {
                 })
                 .orElseThrow(() -> new RuntimeException("Ticket not found for ID: " + id));
     }
+
 }

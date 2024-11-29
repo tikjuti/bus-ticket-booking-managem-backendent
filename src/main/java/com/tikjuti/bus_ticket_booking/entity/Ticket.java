@@ -39,7 +39,9 @@ public class Ticket {
     @JoinColumn(name = "payment_method_id")
     PaymentMethod paymentMethod;
 
-    String seatId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "seat_id")
+    Seat seat;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")

@@ -105,7 +105,6 @@ public class EmployeeService {
         return QueryableExtensions.applyPagination(employeeRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
     }
 
-    @PostAuthorize("returnObject.account.username == authentication.name || hasRole('ADMIN')")
     public EmployeeResponse getEmployee(String employeeId)
     {
         return employeeMapper

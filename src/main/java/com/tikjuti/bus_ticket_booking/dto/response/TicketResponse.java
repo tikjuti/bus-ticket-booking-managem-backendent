@@ -30,6 +30,6 @@ public class TicketResponse {
     CustomerResponse customer;
     TripResponse trip;
     PaymentMethodResponse paymentMethod;
-    String seatId;
+    SeatResponse seatId;
     EmployeeResponse employee;
 }

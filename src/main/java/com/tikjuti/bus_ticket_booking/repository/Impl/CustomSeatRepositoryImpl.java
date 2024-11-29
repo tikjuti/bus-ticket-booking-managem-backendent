@@ -1,10 +1,16 @@
 package com.tikjuti.bus_ticket_booking.repository.Impl;
 
+import com.tikjuti.bus_ticket_booking.entity.Seat;
 import com.tikjuti.bus_ticket_booking.repository.CustomSeatRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.StoredProcedureQuery;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 import static jakarta.persistence.ParameterMode.IN;
 import static jakarta.persistence.ParameterMode.OUT;
@@ -30,4 +36,26 @@ public class CustomSeatRepositoryImpl implements CustomSeatRepository {
 
         return (Boolean) query.getOutputParameterValue("p_is_exists");
     }
+
+    @Override
+    public List<Seat> findSeatsFromCompletedTrips(LocalDate currentDate, LocalTime currentTime) {
+            String jpql = "SELECT s FROM Seat s " +
+                    "WHERE s.vehicle IN (" +
+                    "  SELECT t.vehicle FROM Trip t " +
+                    "  WHERE NOT EXISTS (" +
+                    "    SELECT 1 FROM Trip t2 " +
+                    "    WHERE t2.vehicle = t.vehicle " +
+                    "      AND (t2.arrivalDate > :currentDate " +
+                    "           OR (t2.arrivalDate = :currentDate AND t2.arrivalTime >= :currentTime))" +
+                    "  )" +
+                    ")";
+
+            TypedQuery<Seat> query = entityManager.createQuery(jpql, Seat.class);
+            query.setParameter("currentDate", currentDate);
+            query.setParameter("currentTime", currentTime);
+
+            return query.getResultList();
+    }
+
+
 }

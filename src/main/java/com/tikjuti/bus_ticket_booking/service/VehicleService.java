@@ -122,6 +122,10 @@ public class VehicleService {
         return vehicleResponse;
     }
 
+    public List<Vehicle> getVehiclesByType(String vehicleTypeId) {
+        return vehicleRepository.findByVehicleType(vehicleTypeId);
+    }
+
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public VehicleResponse updateVehicle(VehicleUpdateRequest request, String vehicleId)
     {
@@ -129,12 +133,13 @@ public class VehicleService {
                 .findById(vehicleId)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
-        vehicleMapper.toUpdateVehicleResponse(vehicle);
-
         VehicleType vehicleType = vehicleTypeRepository
                 .findById(request.getVehicleType())
                 .orElseThrow(() -> new RuntimeException("Vehicle type not found"));
         vehicle.setVehicleType(vehicleType);
+        vehicle.setStatus(request.getStatus().name());
+        vehicle.setVehicleName(request.getVehicleName());
+        vehicle.setColor(request.getColor());
 
         return vehicleMapper
                 .toVehicleResponse(vehicleRepository.save(vehicle));

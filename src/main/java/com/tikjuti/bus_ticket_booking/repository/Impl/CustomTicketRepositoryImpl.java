@@ -5,13 +5,17 @@ import com.tikjuti.bus_ticket_booking.repository.CustomTicketRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.StoredProcedureQuery;
+import lombok.extern.slf4j.Slf4j;
+
 import static jakarta.persistence.ParameterMode.IN;
 import static jakarta.persistence.ParameterMode.OUT;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class CustomTicketRepositoryImpl implements CustomTicketRepository {
     @PersistenceContext
     private EntityManager entityManager;
@@ -74,4 +78,363 @@ public class CustomTicketRepositoryImpl implements CustomTicketRepository {
                 .setParameter("tripIds", tripIds)
                 .getResultList();
     }
+
+    @Override
+    public List<Object[]> countTicketsByDay(LocalDate startDate, LocalDate endDate) {
+        StringBuilder jpql = new StringBuilder("SELECT COUNT(t.id) AS count, FUNCTION('DATE', t.paymentDate) AS date " +
+                "FROM Ticket t ");
+
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasStartDate || hasEndDate) {
+            jpql.append("WHERE ");
+            if (hasStartDate) {
+                jpql.append("FUNCTION('DATE', t.paymentDate) >= :startDate ");
+            }
+            if (hasEndDate) {
+                if (hasStartDate) {
+                    jpql.append("AND ");
+                }
+                jpql.append("FUNCTION('DATE', t.paymentDate) <= :endDate ");
+            }
+        }
+
+        jpql.append("GROUP BY FUNCTION('DATE', t.paymentDate) " +
+                "ORDER BY date ASC");
+
+        log.warn(jpql.toString());
+
+        var query = entityManager.createQuery(jpql.toString(), Object[].class);
+
+        if (hasStartDate) {
+            query.setParameter("startDate", startDate);
+        }
+        if (hasEndDate) {
+            query.setParameter("endDate", endDate);
+        }
+
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Object[]> countTicketsByMonth(LocalDate startDate, LocalDate endDate) {
+        StringBuilder jpql = new StringBuilder(
+                "SELECT FUNCTION('YEAR', t.paymentDate) AS year, " +
+                        "FUNCTION('MONTH', t.paymentDate) AS month, " +
+                        "COUNT(t.id) AS count " +
+                        "FROM Ticket t ");
+
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasStartDate || hasEndDate) {
+            jpql.append("WHERE ");
+            if (hasStartDate) {
+                jpql.append("FUNCTION('DATE', t.paymentDate) >= :startDate ");
+            }
+            if (hasEndDate) {
+                if (hasStartDate) {
+                    jpql.append("AND ");
+                }
+                jpql.append("FUNCTION('DATE', t.paymentDate) <= :endDate ");
+            }
+        }
+
+        jpql.append("GROUP BY FUNCTION('YEAR', t.paymentDate), FUNCTION('MONTH', t.paymentDate) " +
+                "ORDER BY year ASC, month ASC");
+
+        var query = entityManager.createQuery(jpql.toString(), Object[].class);
+
+        if (hasStartDate) {
+            query.setParameter("startDate", startDate);
+        }
+        if (hasEndDate) {
+            query.setParameter("endDate", endDate);
+        }
+
+        return query.getResultList();
+    }
+
+
+    @Override
+    public List<Object[]> countTicketsByYear(LocalDate startDate, LocalDate endDate) {
+        StringBuilder jpql = new StringBuilder(
+                "SELECT COUNT(t.id) AS count, FUNCTION('YEAR', t.paymentDate) AS year " +
+                        "FROM Ticket t ");
+
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasStartDate || hasEndDate) {
+            jpql.append("WHERE ");
+            if (hasStartDate) {
+                jpql.append("FUNCTION('DATE', t.paymentDate) >= :startDate ");
+            }
+            if (hasEndDate) {
+                if (hasStartDate) {
+                    jpql.append("AND ");
+                }
+                jpql.append("FUNCTION('DATE', t.paymentDate) <= :endDate ");
+            }
+        }
+
+        jpql.append("GROUP BY FUNCTION('YEAR', t.paymentDate) " +
+                "ORDER BY year ASC");
+
+        var query = entityManager.createQuery(jpql.toString(), Object[].class);
+
+        if (hasStartDate) {
+            query.setParameter("startDate", startDate);
+        }
+        if (hasEndDate) {
+            query.setParameter("endDate", endDate);
+        }
+
+        return query.getResultList();
+    }
+
+
+    @Override
+    public List<Object[]> countTicketsByRoute(LocalDate startDate, LocalDate endDate) {
+        StringBuilder jpql = new StringBuilder(
+                "SELECT COUNT(t.id) AS count, " +
+                        "CONCAT(r.departureLocation, ' - ', r.arrivalLocation) AS routeName " +
+                        "FROM Ticket t " +
+                        "JOIN t.trip trip " +
+                        "JOIN trip.route r ");
+
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasStartDate || hasEndDate) {
+            jpql.append("WHERE ");
+            if (hasStartDate) {
+                jpql.append("FUNCTION('DATE', t.paymentDate) >= :startDate ");
+            }
+            if (hasEndDate) {
+                if (hasStartDate) {
+                    jpql.append("AND ");
+                }
+                jpql.append("FUNCTION('DATE', t.paymentDate) <= :endDate ");
+            }
+        }
+
+        jpql.append("GROUP BY r.departureLocation, r.arrivalLocation " +
+                "ORDER BY count DESC");
+
+        var query = entityManager.createQuery(jpql.toString(), Object[].class);
+
+        if (hasStartDate) {
+            query.setParameter("startDate", startDate);
+        }
+        if (hasEndDate) {
+            query.setParameter("endDate", endDate);
+        }
+
+        return query.getResultList();
+    }
+
+
+    @Override
+    public List<Object[]> countRevenueByDay(LocalDate startDate, LocalDate endDate) {
+        StringBuilder jpql = new StringBuilder(
+                "SELECT FUNCTION('DATE', t.paymentDate) AS paymentDate, " +
+                        "SUM(t.actualTicketPrice) AS totalRevenue " +
+                        "FROM Ticket t ");
+
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasStartDate || hasEndDate) {
+            jpql.append("WHERE ");
+            if (hasStartDate) {
+                jpql.append("FUNCTION('DATE', t.paymentDate) >= :startDate ");
+            }
+            if (hasEndDate) {
+                if (hasStartDate) {
+                    jpql.append("AND ");
+                }
+                jpql.append("FUNCTION('DATE', t.paymentDate) <= :endDate ");
+            }
+        }
+
+        jpql.append("GROUP BY FUNCTION('DATE', t.paymentDate) " +
+                "ORDER BY paymentDate ASC");
+
+        var query = entityManager.createQuery(jpql.toString(), Object[].class);
+
+        if (hasStartDate) {
+            query.setParameter("startDate", startDate);
+        }
+        if (hasEndDate) {
+            query.setParameter("endDate", endDate);
+        }
+
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Object[]> countRevenueByMonth(LocalDate startDate, LocalDate endDate) {
+        StringBuilder jpql = new StringBuilder(
+                "SELECT FUNCTION('YEAR', t.paymentDate) AS year, " +
+                        "FUNCTION('MONTH', t.paymentDate) AS month, " +
+                        "SUM(t.actualTicketPrice) AS totalRevenue " +
+                        "FROM Ticket t ");
+
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasStartDate || hasEndDate) {
+            jpql.append("WHERE ");
+            if (hasStartDate) {
+                jpql.append("FUNCTION('DATE', t.paymentDate) >= :startDate ");
+            }
+            if (hasEndDate) {
+                if (hasStartDate) {
+                    jpql.append("AND ");
+                }
+                jpql.append("FUNCTION('DATE', t.paymentDate) <= :endDate ");
+            }
+        }
+
+        jpql.append("GROUP BY FUNCTION('YEAR', t.paymentDate), FUNCTION('MONTH', t.paymentDate) " +
+                "ORDER BY year ASC, month ASC");
+
+        var query = entityManager.createQuery(jpql.toString(), Object[].class);
+
+        if (hasStartDate) {
+            query.setParameter("startDate", startDate);
+        }
+        if (hasEndDate) {
+            query.setParameter("endDate", endDate);
+        }
+
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Object[]> countRevenueByYear(LocalDate startDate, LocalDate endDate) {
+        StringBuilder jpql = new StringBuilder(
+                "SELECT FUNCTION('YEAR', t.paymentDate) AS year, " +
+                        "SUM(t.actualTicketPrice) AS totalRevenue " +
+                        "FROM Ticket t ");
+
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasStartDate || hasEndDate) {
+            jpql.append("WHERE ");
+            if (hasStartDate) {
+                jpql.append("FUNCTION('DATE', t.paymentDate) >= :startDate ");
+            }
+            if (hasEndDate) {
+                if (hasStartDate) {
+                    jpql.append("AND ");
+                }
+                jpql.append("FUNCTION('DATE', t.paymentDate) <= :endDate ");
+            }
+        }
+
+        jpql.append("GROUP BY FUNCTION('YEAR', t.paymentDate) " +
+                "ORDER BY year ASC");
+
+        var query = entityManager.createQuery(jpql.toString(), Object[].class);
+
+        if (hasStartDate) {
+            query.setParameter("startDate", startDate);
+        }
+        if (hasEndDate) {
+            query.setParameter("endDate", endDate);
+        }
+
+        return query.getResultList();
+    }
+
+
+    @Override
+    public List<Object[]> countRevenueByRoute(LocalDate startDate, LocalDate endDate) {
+        StringBuilder jpql = new StringBuilder(
+                "SELECT CONCAT(r.departureLocation, ' - ', r.arrivalLocation) AS routeName, " +
+                        "SUM(t.actualTicketPrice) AS totalRevenue " +
+                        "FROM Ticket t " +
+                        "JOIN t.trip trip " +
+                        "JOIN trip.route r ");
+
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasStartDate || hasEndDate) {
+            jpql.append("WHERE ");
+            if (hasStartDate) {
+                jpql.append("FUNCTION('DATE', t.paymentDate) >= :startDate ");
+            }
+            if (hasEndDate) {
+                if (hasStartDate) {
+                    jpql.append("AND ");
+                }
+                jpql.append("FUNCTION('DATE', t.paymentDate) <= :endDate ");
+            }
+        }
+
+        jpql.append("GROUP BY r.departureLocation, r.arrivalLocation, trip.id " +
+                "ORDER BY totalRevenue DESC");
+
+        var query = entityManager.createQuery(jpql.toString(), Object[].class);
+
+        if (hasStartDate) {
+            query.setParameter("startDate", startDate);
+        }
+        if (hasEndDate) {
+            query.setParameter("endDate", endDate);
+        }
+
+        return query.getResultList();
+    }
+
+
+    @Override
+    public List<Object[]> countRevenueByVehicleType(LocalDate startDate, LocalDate endDate) {
+        StringBuilder jpql = new StringBuilder(
+                "SELECT vt.vehicleTypeName AS vehicleTypeName, " +
+                        "SUM(t.actualTicketPrice) AS totalRevenue " +
+                        "FROM Ticket t " +
+                        "JOIN t.seat s " +
+                        "JOIN s.vehicle v " +
+                        "JOIN v.vehicleType vt "
+        );
+
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasStartDate || hasEndDate) {
+            jpql.append("WHERE ");
+            if (hasStartDate) {
+                jpql.append("FUNCTION('DATE', t.paymentDate) >= :startDate ");
+            }
+            if (hasEndDate) {
+                if (hasStartDate) {
+                    jpql.append("AND ");
+                }
+                jpql.append("FUNCTION('DATE', t.paymentDate) <= :endDate ");
+            }
+        }
+
+        jpql.append("GROUP BY vt.vehicleTypeName " +
+                "ORDER BY totalRevenue DESC");
+
+        var query = entityManager.createQuery(jpql.toString(), Object[].class);
+
+        if (hasStartDate) {
+            query.setParameter("startDate", startDate);
+        }
+        if (hasEndDate) {
+            query.setParameter("endDate", endDate);
+        }
+
+        return query.getResultList();
+    }
+
+
+
 }

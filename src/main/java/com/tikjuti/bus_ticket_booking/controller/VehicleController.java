@@ -57,6 +57,18 @@ public class VehicleController {
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/type/{vehicleTypeId}")
+    ResponseEntity<ApiResponse<List<Vehicle>>> getVehicleByVehicleTypeId(@PathVariable String vehicleTypeId) {
+
+        ApiResponse<List<Vehicle>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Vehicle retrieved successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(vehicleService.getVehiclesByType(vehicleTypeId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 //
     @PutMapping("/{vehicleId}")
     ResponseEntity<ApiResponse<VehicleResponse>> updateVehicle(@PathVariable String vehicleId,

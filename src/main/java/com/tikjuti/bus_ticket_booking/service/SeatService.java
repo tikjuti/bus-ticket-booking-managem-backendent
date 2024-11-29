@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -96,50 +95,27 @@ public class SeatService {
         });
     }
 
-    @Scheduled(fixedRate = 3600000)
+    @Scheduled(fixedRate = 60000)
     @Transactional
     public void updateSeatStatusForCompletedTrips() {
         LocalDate currentDate = LocalDate.now();
         LocalTime currentTime = LocalTime.now();
 
-        List<Trip> completedTrips = tripRepository.findCompletedTrips(currentDate, currentTime);
+        List<Seat> seats = seatRepository.findSeatsFromCompletedTrips(currentDate, currentTime);
 
-        for (Trip trip : completedTrips) {
-            String vehicleId = trip.getVehicle().getId();
+        seats.stream()
+                .filter(seat -> seat.getStatus().equals(SeatStatus.OCCUPIED.name()))
+                .forEach(seat -> log.warn("Seat {} is now available", seat.getId()));
 
-            log.warn("Trip {} has been completed", vehicleId);
+        seats.parallelStream()
+                .filter(seat -> !seat.getStatus().equals(SeatStatus.AVAILABLE.name()))
+                .forEach(seat -> {
+                    if (seat.getStatus().equals(SeatStatus.OCCUPIED.name())) {
+                        seat.setStatus(SeatStatus.AVAILABLE.name());
 
-            List<Trip> tripsUsingSameVehicle = tripRepository.findByVehicleId(vehicleId);
-
-            boolean hasIncompleteTrip = tripsUsingSameVehicle.stream()
-                    .anyMatch(t -> {
-                        if (!t.getArrivalDate().isBefore(currentDate)) {
-                            return t.getArrivalDate().isEqual(currentDate) && t.getArrivalTime().isAfter(currentTime);
-                        }
-                        return false;
-                    });
-
-
-            if (hasIncompleteTrip) {
-                continue;
-            }
-
-            Set<Seat> seats = seatRepository.findByVehicleId(vehicleId);
-
-            seats.stream()
-                    .filter(seat -> seat.getStatus().equals(SeatStatus.OCCUPIED.name()))
-                    .forEach(seat -> log.warn("Seat {} is now available", seat.getId()));
-
-            seats.parallelStream()
-                    .filter(seat -> !seat.getStatus().equals(SeatStatus.AVAILABLE.name()))
-                    .forEach(seat -> {
-                        if (seat.getStatus().equals(SeatStatus.OCCUPIED.name())) {
-                            seat.setStatus(SeatStatus.AVAILABLE.name());
-
-                        }
-                    });
-            seatRepository.saveAll(seats);
-        }
+                    }
+                });
+        seatRepository.saveAll(seats);
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")

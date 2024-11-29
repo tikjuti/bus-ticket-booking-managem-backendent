@@ -57,22 +57,10 @@ public class CustomTripRepositoryImpl implements CustomTripRepository {
     }
 
     @Override
-    public List<Trip> findCompletedTrips(LocalDate currentDate, LocalTime currentTime) {
-        String jpql = "SELECT t FROM Trip t WHERE t.arrivalDate < :currentDate OR (t.arrivalDate = :currentDate AND t.arrivalTime < :currentTime)" +
-                "AND t.vehicle NOT IN (SELECT trip.vehicle FROM Trip trip WHERE trip.arrivalDate >= :currentDate AND trip.arrivalTime >= :currentTime)";
-
-        TypedQuery<Trip> query = entityManager.createQuery(jpql, Trip.class);
-        query.setParameter("currentDate", currentDate);
-        query.setParameter("currentTime", currentTime);
-
-        return query.getResultList();
-    }
-
-    @Override
     public List<Trip> findStartingTrips(LocalDate currentDate, LocalTime currentTime) {
         LocalDateTime currentDateTime = LocalDateTime.of(currentDate, currentTime);
-        LocalDateTime sixHoursAfter = currentDateTime.plusHours(6);
-        LocalDateTime twelveHoursAfter = currentDateTime.plusHours(12);
+        LocalDateTime sixHoursAfter = currentDateTime.plusHours(3);
+        LocalDateTime twelveHoursAfter = currentDateTime.plusHours(6);
 
         LocalDate sixHoursAfterDate = sixHoursAfter.toLocalDate();
         LocalTime sixHoursAfterTime = sixHoursAfter.toLocalTime();
