@@ -1,6 +1,7 @@
 package com.tikjuti.bus_ticket_booking.repository.Impl;
 
 import com.tikjuti.bus_ticket_booking.entity.Seat;
+import com.tikjuti.bus_ticket_booking.entity.Trip;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
 import com.tikjuti.bus_ticket_booking.repository.CustomVehicleRepository;
 import jakarta.persistence.EntityManager;
@@ -30,6 +31,13 @@ public class CustomVehicleRepositoryImpl implements CustomVehicleRepository {
         String jpql = "SELECT v FROM Vehicle v WHERE v.vehicleType.id = :vehicleTypeId";
         return entityManager.createQuery(jpql, Vehicle.class)
                 .setParameter("vehicleTypeId", vehicleTypeId)
+                .getResultList();
+    }
+
+    @Override
+    public List<Vehicle> getUnassignedVehicles() {
+        String jpql = "SELECT v FROM Vehicle v WHERE v.id NOT IN (SELECT a.vehicle.id FROM DriverAssignmentForVehicle a)";
+        return entityManager.createQuery(jpql, Vehicle.class)
                 .getResultList();
     }
 }

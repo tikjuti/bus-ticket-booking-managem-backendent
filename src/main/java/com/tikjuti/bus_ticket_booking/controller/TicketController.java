@@ -96,6 +96,18 @@ public class TicketController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @GetMapping("/trip/{tripId}")
+    ResponseEntity<ApiResponse<List<Ticket>>> getTicketByTripId(@PathVariable String tripId) {
+
+        ApiResponse<List<Ticket>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Ticket retrieved successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(ticketService.getTicketsByTripId(tripId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
     @PutMapping("/{ticketId}")
     ResponseEntity<ApiResponse<TicketResponse>> updateTicket(@PathVariable String ticketId,
                                                              @RequestBody TicketUpdateRequest request)

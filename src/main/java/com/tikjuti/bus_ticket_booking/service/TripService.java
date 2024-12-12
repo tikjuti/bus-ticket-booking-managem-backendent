@@ -137,6 +137,11 @@ public class TripService {
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
+    public List<Trip> getUnassignedTrips() {
+        return tripRepository.getUnassignedTrips();
+    }
+
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
     public TripResponse getTrip(String tripId)
     {
         return tripMapper.toTripResponse(tripRepository

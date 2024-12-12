@@ -23,4 +23,5 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String>, JpaSp
     Set<Seat> findSeatsByVehicleId(String vehicleId);
 
     List<Vehicle> findByVehicleType(String vehicleTypeId);
+    List<Vehicle> getUnassignedVehicles();
 }

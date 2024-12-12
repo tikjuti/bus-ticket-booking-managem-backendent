@@ -18,4 +18,7 @@ public interface CustomTripRepository {
     Boolean checkVehicleIsACTIVE(String vehicleId);
 
     List<Trip> findStartingTrips(LocalDate currentDate, LocalTime currentTime);
+
+    List<Trip> getUnassignedTrips();
+
 }

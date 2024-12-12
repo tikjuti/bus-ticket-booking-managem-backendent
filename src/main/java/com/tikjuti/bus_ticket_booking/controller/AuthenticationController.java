@@ -10,11 +10,15 @@ import com.tikjuti.bus_ticket_booking.dto.response.AuthenticationResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.IntrospectResponse;
 import com.tikjuti.bus_ticket_booking.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.text.ParseException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -27,6 +31,50 @@ public class AuthenticationController {
         ApiResponse<AuthenticationResponse> apiResponse = new ApiResponse<>();
 
         var isAuthenticated = authenticationService.authenticate(request);
+
+        apiResponse.setCode(HttpStatus.CREATED.value());
+        apiResponse.setMessage("Login successfully");
+        apiResponse.setResult(AuthenticationResponse.builder()
+                .token(isAuthenticated.getToken())
+                .authenticated(isAuthenticated.isAuthenticated())
+                .build());
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/social-login")
+    ResponseEntity<Void> socialLogin(@RequestParam String loginType) throws UnsupportedEncodingException {
+
+        loginType = loginType.trim().toLowerCase();
+
+        String url = authenticationService.socialLogin(loginType);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(url));
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+
+    @GetMapping("/google/callback")
+    ResponseEntity<ApiResponse<AuthenticationResponse>>  handleGoogleCallback(@RequestParam String code, @RequestParam String loginType) throws JOSEException {
+        ApiResponse<AuthenticationResponse> apiResponse = new ApiResponse<>();
+
+        var isAuthenticated = authenticationService.handleGoogleCallback(code, loginType);
+
+        apiResponse.setCode(HttpStatus.CREATED.value());
+        apiResponse.setMessage("Login successfully");
+        apiResponse.setResult(AuthenticationResponse.builder()
+                .token(isAuthenticated.getToken())
+                .authenticated(isAuthenticated.isAuthenticated())
+                .build());
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/facebook/callback")
+    ResponseEntity<ApiResponse<AuthenticationResponse>>  handleFacebookCallback(@RequestParam String code, @RequestParam String loginType) throws JOSEException {
+        ApiResponse<AuthenticationResponse> apiResponse = new ApiResponse<>();
+
+        var isAuthenticated = authenticationService.handleFacebookCallback(code, loginType);
 
         apiResponse.setCode(HttpStatus.CREATED.value());
         apiResponse.setMessage("Login successfully");

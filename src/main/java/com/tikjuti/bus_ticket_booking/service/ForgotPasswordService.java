@@ -12,6 +12,7 @@ import com.tikjuti.bus_ticket_booking.repository.AccountRepository;
 import com.tikjuti.bus_ticket_booking.repository.CustomerRepository;
 import com.tikjuti.bus_ticket_booking.repository.EmployeeRepository;
 import com.tikjuti.bus_ticket_booking.repository.ForgotPasswordRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Random;
 
+@Slf4j
 @Service
 public class ForgotPasswordService {
 

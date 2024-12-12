@@ -12,6 +12,7 @@ public interface CustomTicketRepository {
     List<Object[]> findTripsByUser(String departureLocation, String arrivalLocation, String departureDate);
     int findAvailableSeatsByVehicleId(String vehicleId);
     int findTicketPrice(String vehicleId, String routeId);
+    List<Ticket> findByTripId(String tripId);
     Optional<Ticket> findTicketByTicketIdAndPhone(String ticketId, String phone);
     List<Ticket> findByTripIdsAndEmailNotSent(List<String> tripIds);
     List<Object[]> countTicketsByDay(LocalDate startDate, LocalDate endDate);

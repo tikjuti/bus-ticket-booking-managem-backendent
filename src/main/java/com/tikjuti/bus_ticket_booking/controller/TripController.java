@@ -47,6 +47,19 @@ public class TripController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @GetMapping("/unassigned")
+    ResponseEntity<ApiResponse<List<Trip>>> getTrips() {
+        List<Trip> tripList = tripService.getUnassignedTrips();
+
+        ApiResponse<List<Trip>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Trips retrieved successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(tripList);
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
     @GetMapping("/{tripId}")
     ResponseEntity<ApiResponse<TripResponse>> getTrip(@PathVariable String tripId) {
 

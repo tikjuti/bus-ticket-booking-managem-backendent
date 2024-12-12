@@ -8,6 +8,7 @@ import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.SeatResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
 import com.tikjuti.bus_ticket_booking.entity.Seat;
+import com.tikjuti.bus_ticket_booking.entity.Trip;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
 import com.tikjuti.bus_ticket_booking.entity.VehicleType;
 import com.tikjuti.bus_ticket_booking.enums.SeatStatus;
@@ -107,6 +108,11 @@ public class VehicleService {
 
         return QueryableExtensions.applyPagination(
                 vehicleRepository, spec, queryRequest.getPage(), queryRequest.getPageSize());
+    }
+
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
+    public List<Vehicle> getUnassignedVehicles() {
+        return vehicleRepository.getUnassignedVehicles();
     }
 
     public VehicleResponse getVehicle(String vehicleId)

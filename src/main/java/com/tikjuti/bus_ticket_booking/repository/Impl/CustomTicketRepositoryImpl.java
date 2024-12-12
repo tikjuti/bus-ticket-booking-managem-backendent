@@ -62,6 +62,14 @@ public class CustomTicketRepositoryImpl implements CustomTicketRepository {
     }
 
     @Override
+    public List<Ticket> findByTripId(String tripId) {
+        String jpql = "SELECT t FROM Ticket t WHERE t.trip.id = :tripId";
+        return entityManager.createQuery(jpql, Ticket.class)
+                .setParameter("tripId", tripId)
+                .getResultList();
+    }
+
+    @Override
     public Optional<Ticket> findTicketByTicketIdAndPhone(String ticketId, String phone) {
         String jpql = "SELECT t FROM Ticket t WHERE t.id = :ticketId AND t.customer.phone = :phone";
         return entityManager.createQuery(jpql, Ticket.class)

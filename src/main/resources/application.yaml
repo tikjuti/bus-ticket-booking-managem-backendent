@@ -24,6 +24,34 @@ spring:
           auth: true
           starttls:
             enable: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: "http://localhost:3000/api/auth/google/callback"
+            scope: email, profile
+          facebook:
+            client-id: ${FACEBOOK_CLIENT_ID}
+            client-secret: ${FACEBOOK_CLIENT_SECRET}
+            redirect-uri: "http://localhost:3000/api/auth/facebook/callback"
+            scope: email, public_profile
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+          facebook:
+            authorization-uri: https://www.facebook.com/v21.0/dialog/oauth
+            token-uri: https://graph.facebook.com/v21.0/oauth/access_token
+            user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture
+
+
+
+
+
 
 jwt:
   signerKey: ${JWT_SIGNER_KEY}
@@ -31,8 +59,8 @@ jwt:
 vnpay:
   vnp_PayUrl: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
   vnp_ReturnUrl: "http://localhost:3000/buyticket/detail"
-  vnp_TmnCode: ${VNP_TMN_CODE}
-  secretKey: ${VNP_SECRET_KEY}
+  vnp_TmnCode: ${VNPAY_TMN_CODE}
+  secretKey: ${VNPAY_TMN_SECRETKEY}
   vnp_ApiUrl: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
 
 momo:

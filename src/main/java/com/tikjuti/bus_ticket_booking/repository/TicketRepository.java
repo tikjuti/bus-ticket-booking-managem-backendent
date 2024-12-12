@@ -22,6 +22,8 @@ public interface TicketRepository extends JpaRepository<Ticket, String>,
 
     int findTicketPrice(String vehicleId, String routeId);
 
+    List<Ticket> findByTripId(String tripId);
+
     List<Ticket> findByTripIdsAndEmailNotSent(List<String> tripIds);
 
     List<Object[]> countTicketsByDay(LocalDate startDate, LocalDate endDate);

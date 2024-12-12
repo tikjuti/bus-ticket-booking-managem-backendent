@@ -6,6 +6,7 @@ import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleQueryRequest;
 import com.tikjuti.bus_ticket_booking.dto.request.Vehicle.VehicleUpdateRequest;
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.VehicleResponse;
+import com.tikjuti.bus_ticket_booking.entity.Trip;
 import com.tikjuti.bus_ticket_booking.entity.Vehicle;
 import com.tikjuti.bus_ticket_booking.service.VehicleService;
 import jakarta.validation.Valid;
@@ -54,6 +55,19 @@ public class VehicleController {
         apiResponse.setMessage("Vehicle retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());
         apiResponse.setResult(vehicleService.getVehicle(vehicleId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/unassigned")
+    ResponseEntity<ApiResponse<List<Vehicle>>> getVehiclesUnsigned() {
+        List<Vehicle> vehicleList = vehicleService.getUnassignedVehicles();
+
+        ApiResponse<List<Vehicle>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Vehicles retrieved successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(vehicleList);
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }

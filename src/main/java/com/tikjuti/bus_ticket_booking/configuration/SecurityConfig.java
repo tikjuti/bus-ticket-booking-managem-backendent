@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -56,6 +57,9 @@ public class SecurityConfig {
             "/api/vnpay/create",
             "/api/tickets/buyTicket/{tripId}",
             "api/seats/{vehicleId}",
+            "/api/auth/social-login",
+            "/api/auth/google/callback",
+            "/api/auth/facebook/callback",
     };
 
     private final String[] PUBLIC_ENDPOINTS_PUT = {
@@ -70,31 +74,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(cors -> cors.configurationSource(request -> {
-            CorsConfiguration corsConfiguration = new CorsConfiguration();
-            corsConfiguration.setAllowedOrigins(List.of("*"));
-            corsConfiguration.setAllowedHeaders(List.of("*"));
-            corsConfiguration.setAllowedMethods(List.of("*"));
-            return corsConfiguration;
+                    CorsConfiguration corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.setAllowedOrigins(List.of("*"));
+                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    corsConfiguration.setAllowedMethods(List.of("*"));
+                    return corsConfiguration;
                 }))
                 .authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS_POST).permitAll()
-                        .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
-                        .requestMatchers(HttpMethod.PUT, PUBLIC_ENDPOINTS_PUT).permitAll()
-                        .requestMatchers(HttpMethod.PATCH, PUBLIC_ENDPOINTS_PATCH).permitAll()
+                        request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS_POST).permitAll()
+                                .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
+                                .requestMatchers(HttpMethod.PUT, PUBLIC_ENDPOINTS_PUT).permitAll()
+                                .requestMatchers(HttpMethod.PATCH, PUBLIC_ENDPOINTS_PATCH).permitAll()
 
-                        .anyRequest().authenticated());
+                                .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 ->
-            oauth2.jwt(jwtConfigurer ->
-                    jwtConfigurer.decoder(jwtDecoder)
-                            .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                    .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                oauth2.jwt(jwtConfigurer ->
+                                jwtConfigurer.decoder(jwtDecoder)
+                                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();
     }
+
 
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter(){

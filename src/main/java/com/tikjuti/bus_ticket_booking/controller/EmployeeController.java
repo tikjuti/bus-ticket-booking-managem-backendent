@@ -8,6 +8,7 @@ import com.tikjuti.bus_ticket_booking.dto.request.Employee.EmployeeUpdateRequest
 import com.tikjuti.bus_ticket_booking.dto.response.ApiResponse;
 import com.tikjuti.bus_ticket_booking.dto.response.EmployeeResponse;
 import com.tikjuti.bus_ticket_booking.entity.Employee;
+import com.tikjuti.bus_ticket_booking.entity.Vehicle;
 import com.tikjuti.bus_ticket_booking.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,19 @@ public class EmployeeController {
         apiResponse.setMessage("Employee retrieved successfully");
         apiResponse.setCode(HttpStatus.OK.value());
         apiResponse.setResult(employeeService.getEmployee(employeeId));
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/drivers")
+    ResponseEntity<ApiResponse<List<Employee>>> getEmployeeDriver() {
+        List<Employee>  employeeList = employeeService.getEmployeesDriver();
+
+        ApiResponse<List<Employee>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setMessage("Employees retrieved successfully");
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(employeeList);
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }

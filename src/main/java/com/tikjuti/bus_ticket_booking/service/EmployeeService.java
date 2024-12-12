@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -110,6 +111,12 @@ public class EmployeeService {
         return employeeMapper
                 .toEmployeeResponse(employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found")));
+    }
+
+    @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")
+    public List<Employee> getEmployeesDriver()
+    {
+        return employeeRepository.findByEmployeeTypeEmployeeTypeName("Tài xế");
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('EMPLOYEE')")

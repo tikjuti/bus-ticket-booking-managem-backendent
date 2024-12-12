@@ -1,5 +1,6 @@
 package com.tikjuti.bus_ticket_booking.repository.Impl;
 
+import com.tikjuti.bus_ticket_booking.entity.Ticket;
 import com.tikjuti.bus_ticket_booking.entity.Trip;
 import com.tikjuti.bus_ticket_booking.repository.CustomTripRepository;
 import jakarta.persistence.EntityManager;
@@ -80,5 +81,12 @@ public class CustomTripRepositoryImpl implements CustomTripRepository {
         query.setParameter("twelveHoursAfterTime", twelveHoursAfterTime);
 
         return query.getResultList();
+    }
+
+    @Override
+    public List<Trip> getUnassignedTrips() {
+        String jpql = "SELECT t FROM Trip t WHERE t.id NOT IN (SELECT a.trip.id FROM DriverAssignmentForTrip a)";
+        return entityManager.createQuery(jpql, Trip.class)
+                .getResultList();
     }
 }

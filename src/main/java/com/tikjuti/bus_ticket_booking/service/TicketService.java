@@ -174,6 +174,7 @@ public class TicketService {
                 + "Điểm đến       : " + ticket.getTrip().getRoute().getArrivalPoint() + "\n\n"
                 + "Tên xe         : " + ticket.getTrip().getVehicle().getVehicleName() + "\n"
                 + "Biển số        : " + ticket.getTrip().getVehicle().getLicensePlate() + "\n"
+                + "Số ghế         : " + ticket.getSeat().getPosition() + "\n"
                 + "Giá vé         : " + ticket.getActualTicketPrice() + " VND\n"
                 + "--------------------------------------------------\n\n"
                 + "Chúc bạn có một chuyến đi an toàn và thoải mái!\n\n"
@@ -219,6 +220,11 @@ public class TicketService {
                         vehicle.getId()));
 
         return buyTicketResponse;
+    }
+
+
+    public List<Ticket> getTicketsByTripId(String tripId) {
+        return ticketRepository.findByTripId(tripId);
     }
 
     public Ticket createTicket(TicketCreationRequest request)
@@ -298,7 +304,7 @@ public class TicketService {
 
 
             emailService.sendSimpleMessage(mailBody);
-            ticket.setEmailSent(true);
+            ticket.setEmailSent(false);
         } catch (Exception e) {
             System.err.println("Lỗi khi gửi email cho vé ID: " + ticket.getId());
         }
@@ -318,6 +324,7 @@ public class TicketService {
                 + "Điểm đi        : " + ticket.getTrip().getRoute().getDeparturePoint() + "\n"
                 + "Điểm đến       : " + ticket.getTrip().getRoute().getArrivalPoint() + "\n\n"
                 + "Tên xe         : " + ticket.getTrip().getVehicle().getVehicleName() + "\n"
+                + "Số ghế         : " + ticket.getSeat().getPosition() + "\n"
                 + "Giá vé         : " + ticket.getActualTicketPrice() + " VND\n"
                 + "--------------------------------------------------\n\n"
                 + "Trân trọng,\n"

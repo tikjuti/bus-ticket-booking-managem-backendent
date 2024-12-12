@@ -25,4 +25,5 @@ public interface TripRepository extends JpaRepository<Trip, String>, JpaSpecific
     );
 
     List<Trip> findStartingTrips(LocalDate currentDate, LocalTime currentTime);
+    List<Trip> getUnassignedTrips();
 }

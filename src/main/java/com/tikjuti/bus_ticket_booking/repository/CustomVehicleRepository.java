@@ -13,4 +13,5 @@ public interface CustomVehicleRepository {
 
     Set<Seat> findSeatsByVehicleId(String vehicleId);
     List<Vehicle> findByVehicleType(String vehicleTypeId);
+    List<Vehicle> getUnassignedVehicles();
 }
