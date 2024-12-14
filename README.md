@@ -12,7 +12,7 @@
 
 ### 3. Login
 
-<img src="./static/images/login.png" style="zoom:60%" alt="game"/>
+<img src="./public/login.png" style="zoom:60%" alt="game"/>
 
 
 ### 4. Update Profile
